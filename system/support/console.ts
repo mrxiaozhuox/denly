@@ -28,4 +28,9 @@ export class EConsole {
         let temp: string = `[WARN] @${source}:> ${message}`;
         console.warn(colorTab.Yellow + temp + colorTab.Clean);
     }
+
+    public static error(message: string, source: string = "Denly"): void {
+        let temp: string = `[ERROR] @${source}:> ${message}`;
+        console.error(colorTab.Red + temp + colorTab.Clean);
+    }
 }

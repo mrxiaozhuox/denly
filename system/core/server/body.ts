@@ -3,6 +3,11 @@
  * @author mrxiaozhuox <mrxzx@qq.com>
  */
 
+// import { ensureDirSync } from "https://deno.land/std@0.92.0/fs/mod.ts";
+
+import { Denly } from "../denly.ts";
+import { EConsole } from "../../support/console.ts"
+
 export interface RequestData {
     key: string,
     value: string,
@@ -179,4 +184,22 @@ export function postDecoder(body: Uint8Array, header: Headers): Array<RequestDat
     }
 
     return [];
+}
+
+/**
+ * 上传文件缓存
+ * 请勿随意手动调用
+ */
+export function uploadFileTemp(data: RequestData): string {
+
+    let path: string = "";
+    try {
+        path = Deno.makeTempFileSync({ prefix: "denly-upload-", suffix: ".temp" });
+        let out = new TextEncoder().encode(data.value);
+        Deno.writeFileSync(path, out);
+    } catch (error) {
+        EConsole.error("upload file temp error.");
+    }
+
+    return path;
 }

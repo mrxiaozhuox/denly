@@ -23,14 +23,13 @@ import { DCons } from "../tools.ts";
 export interface DeOption {
     hostname: string,
     port: number,
-    options: {
+    options?: {
         debug?: boolean
     }
 }
 
 interface DeConfig {
     storage: {
-        temp: string,
         log: string,
         template: string
     }
@@ -40,7 +39,6 @@ export class Denly {
 
     public config: DeConfig = {
         storage: {
-            temp: DCons.rootPath + '/runtime/temp',
             log: DCons.rootPath + "/runtime/log",
             template: DCons.rootPath + "/template"
         }
@@ -63,7 +61,6 @@ export class Denly {
                 this.http = new DenlyHttp('0.0.0.0', 808, { debug: false });
             }
         }
-
     }
 
     /**
@@ -86,6 +83,7 @@ export class Denly {
         } else {
             const origin: Uint8Array = await Deno.readAll(request.body);
             form = postDecoder(origin, request.headers);
+
         }
 
         // Request
@@ -148,7 +146,9 @@ export class Denly {
 
         for await (const request of http.serve) {
             this.proxy(request).then(({ code }) => {
+
                 Denly.reqinfo(request, code); // 请求数据渲染
+
             });
         }
     }
@@ -182,13 +182,4 @@ export function pathParser(url: string) {
     }
 
     return sections;
-}
-
-function Uint8ArrayToString(data: Uint8Array) {
-    var dataString = "";
-    for (var i = 0; i < data.length; i++) {
-        dataString += String.fromCharCode(data[i]);
-    }
-
-    return dataString;
 }
