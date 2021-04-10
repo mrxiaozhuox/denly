@@ -1,7 +1,9 @@
-import { Denly, Request } from "./system/core/denly.ts";
+import { Denly } from "./system/core/denly.ts";
 import { Router } from './system/core/router.ts';
 
-import { } from "./system/core/server/http.ts";
+import { ROOT_PATH } from "./system/tools.ts";
+
+console.log(ROOT_PATH);
 
 // // 服务器运行
 let app: Denly = new Denly({
@@ -12,13 +14,11 @@ let app: Denly = new Denly({
     }
 });
 
+app.config.storage = {
+    temp: "/"
+}
 
 Router.rule("/", () => {
-
-    console.log(Request.args("hello"));
-
-    return Request.args("hello");
-
     return `<h1>Main Page</h1>`;
 }, { method: "GET" });
 

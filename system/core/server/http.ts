@@ -111,20 +111,46 @@ class DRequest {
             return info.value;
         }
         return null;
-
     }
-
 }
 
 export let Request = new DRequest();
 
-export function requestInit(data: { args: Array<RequestData>, form: Array<RequestData> }) {
+class DResponse {
+
+    /**
+     * 重定向设置 
+     */
+    public redirect(url: string, cond: boolean = true) {
+        if (cond) {
+            reqinfo.redirect = url;
+        } else {
+            reqinfo.redirect = "#";
+        }
+    }
+}
+
+export let Response = new DResponse();
+
+export function httpInit(data: { args: Array<RequestData>, form: Array<RequestData> }) {
     reqinfo._args = data.args;
     reqinfo._form = data.form;
 }
 
-export function requestHeader(): Headers {
+interface httpResponse {
+    header: Headers,
+    redirect: string
+}
+
+export function httpResp(): httpResponse {
     let header = new Headers();
 
-    return header;
+    let redirect = reqinfo.redirect;
+
+    reqinfo.redirect = "#";
+
+    return {
+        header: header,
+        redirect: redirect
+    };
 }

@@ -1,14 +1,20 @@
 // Copyright 2020-2021 the mrxiaozhuox. All rights reserved. MIT license
 
-import { ServerRequest, Response } from "https://deno.land/std@0.92.0/http/server.ts";
+/**
+ * Denly Framework
+ * @author mrxiaozhuox<mrxzx@qq.com>
+ * @abstract Denly Framework
+ */
+
+import { ServerRequest } from "https://deno.land/std@0.92.0/http/server.ts";
 
 import { Server, DenlyHttp, HttpState } from "./server/http.ts";
-import { requestHeader, requestInit } from "./server/http.ts";
+import { httpInit, httpResp } from "./server/http.ts";
 
 import { EConsole, colorTab } from "../support/console.ts";
 import { postDecoder, getDecoder, RequestData } from "./server/body.ts";
 
-export { Request } from "./server/http.ts";
+export { Request, Response } from "./server/http.ts";
 
 import { Router, RouteController } from '../core/router.ts';
 
@@ -20,7 +26,18 @@ export interface DeOption {
     }
 }
 
+interface DeConfig {
+    storage: {
+        temp?: string,
+        cache?: string,
+        log?: string,
+        template?: string
+    }
+}
+
 export class Denly {
+
+    public config: DeConfig = { storage: {} };
 
     private http: DenlyHttp;
 
@@ -64,7 +81,7 @@ export class Denly {
         }
 
         // Request
-        requestInit({ args, form });
+        httpInit({ args, form });
 
         let target = RouteController.processer(sections, request.method);
 
@@ -84,11 +101,19 @@ export class Denly {
             status = 404;
         }
 
+        let resp = httpResp();
+
+        if (resp.redirect != "#" && resp.redirect != "") {
+            let header: Headers = new Headers();
+            header.set("Location", resp.redirect);
+            request.respond({ status: 301, body: "", headers: header });
+        }
+
         // 返回最终结果
         request.respond({
             status: status,
             body: context,
-            headers: requestHeader()
+            headers: resp.header
         });
 
         return { code: status };
