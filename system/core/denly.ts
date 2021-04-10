@@ -18,6 +18,8 @@ export { Request, Response } from "./server/http.ts";
 
 import { Router, RouteController } from '../core/router.ts';
 
+import { DCons } from "../tools.ts";
+
 export interface DeOption {
     hostname: string,
     port: number,
@@ -28,16 +30,21 @@ export interface DeOption {
 
 interface DeConfig {
     storage: {
-        temp?: string,
-        cache?: string,
-        log?: string,
-        template?: string
+        temp: string,
+        log: string,
+        template: string
     }
 }
 
 export class Denly {
 
-    public config: DeConfig = { storage: {} };
+    public config: DeConfig = {
+        storage: {
+            temp: DCons.rootPath + '/runtime/temp',
+            log: DCons.rootPath + "/runtime/log",
+            template: DCons.rootPath + "/template"
+        }
+    };
 
     private http: DenlyHttp;
 
@@ -56,6 +63,7 @@ export class Denly {
                 this.http = new DenlyHttp('0.0.0.0', 808, { debug: false });
             }
         }
+
     }
 
     /**

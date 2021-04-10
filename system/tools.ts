@@ -1,4 +1,17 @@
-let path = (import.meta.url).split("/");
-{ path.pop(); path.pop(); } // 删除后两段，获取主程序
+/**
+ * System.Tools
+ * 快捷引入一些常用功能和函数
+ */
 
-export const ROOT_PATH = path.join("/");
+interface consInfo {
+    rootPath: string
+}
+
+/** Denly Const Info */
+export const DCons: consInfo = {
+    rootPath: (Deno.mainModule).substring(0, Deno.mainModule.lastIndexOf("/") + 1),
+};
+
+export { Router } from "./core/router.ts";
+export { Request, Response } from "./core/server/http.ts";
+export { HttpError } from "./support/error.ts";

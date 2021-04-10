@@ -135,6 +135,7 @@ export function postDecoder(body: Uint8Array, header: Headers): Array<RequestDat
                         file = filreg.exec(v)?.[1] || "";
                         flag = 1;
 
+                        temp.type = "FILE";
                         temp.other?.set("filename", file);
                     }
 
