@@ -85,7 +85,7 @@ export class EMemory {
                 // 持久化是否支持
                 if (!memory.persistence || !memory.persistence.useable) { continue; }
 
-                
+
 
             }
 
