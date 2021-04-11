@@ -6,19 +6,25 @@
  * @abstract Denly Framework
  */
 
+// Deno 标准库 - HTTP Server
 import { ServerRequest } from "https://deno.land/std@0.92.0/http/server.ts";
 
+// Denly 服务器处理器
 import { Server, DenlyHttp, HttpState } from "./server/http.ts";
 import { httpInit, httpResp } from "./server/http.ts";
-
-import { EConsole, colorTab } from "../support/console.ts";
 import { postDecoder, getDecoder, RequestData } from "./server/body.ts";
 
-export { Request, Response } from "./server/http.ts";
+// Denly Support - 辅助程序 
+import { EConsole, colorTab } from "../support/console.ts";
 
+// Denly Router 路由程序
 import { Router, RouteController } from '../core/router.ts';
 
+// Denly Tools
 import { DCons } from "../tools.ts";
+
+// Denly Memory
+import { Memory } from "../library/memory.ts";
 
 export interface DeOption {
     hostname: string,
@@ -32,6 +38,9 @@ interface DeConfig {
     storage: {
         log: string,
         template: string
+    },
+    memory: {
+        interval: number
     }
 }
 
@@ -41,6 +50,9 @@ export class Denly {
         storage: {
             log: DCons.rootPath + "/runtime/log",
             template: DCons.rootPath + "/template"
+        },
+        memory: {
+            interval: 60 * 1000
         }
     };
 
@@ -125,6 +137,9 @@ export class Denly {
         return { code: status };
     }
 
+    /**
+     * Denly Server 运行程序
+     */
     public async run() {
 
         let http: DenlyHttp = this.http;
@@ -138,11 +153,12 @@ export class Denly {
 
         EConsole.blank();
         EConsole.info(`HTTP Server ${path} 已启动！`);
-
         if (http.debug) {
             EConsole.warn("开启了 Debug 模式（仅用于开发环境）");
         }
         EConsole.blank();
+
+        Memory.listener({ interval: this.config.memory.interval });
 
         for await (const request of http.serve) {
             this.proxy(request).then(({ code }) => {
