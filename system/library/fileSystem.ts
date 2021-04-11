@@ -15,7 +15,7 @@ export function dirExist(path: string) {
  * 如果一个目录不存在，则自动创建
  */
 export function dirCheck(path: string) {
-    if (dirExist(path)) {
+    if (!dirExist(path)) {
         try {
             Deno.mkdirSync(path, { recursive: true })
         } catch (errror) { return false; }

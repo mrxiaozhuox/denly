@@ -3,6 +3,9 @@
  * @author mrxiaozhuox <mrxzx@qq.com>
  */
 import { DenlyHttp } from "../core/server/http.ts";
+import { dirExist, dirCheck } from "./fileSystem.ts";
+
+import { DCons, EConsole } from "../tools.ts";
 
 interface memoryStruct {
     value: Uint8Array,
@@ -36,9 +39,15 @@ export class EMemory {
     private memorys: Map<symbol, memoryGroup> = new Map();
 
     private thisGroup: symbol;
+    private memoryPath: string = DCons.rootPath + "/runtime/memory";
 
     constructor() {
         this.thisGroup = Symbol("default");
+
+        if (!dirCheck(DCons.rootPath + "/runtime/memory/")) {
+            EConsole.error("Directory init error. [ runtime/memory ]");
+            Deno.exit(5);
+        }
     }
 
     /**
@@ -63,8 +72,9 @@ export class EMemory {
      * 用于对数据进行持久化和更新监听
      */
     public async listener(options: listenerOption) {
+        this.persistenceAll();
         setInterval(() => {
-
+            this.persistenceAll();
         }, options.interval);
     }
 
@@ -83,8 +93,10 @@ export class EMemory {
             for (const [symbol, memory] of group.memorys) {
 
                 // 持久化是否支持
-                if (!memory.persistence || !memory.persistence.useable) { continue; }
-                
+                if (!memory.persistence || !memory.persistence.useable) { continue; } 4
+
+                const filename: string = symbol.toString();
+
             }
 
         }
