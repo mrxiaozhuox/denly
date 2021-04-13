@@ -73,6 +73,8 @@ export class Denly {
                 this.http = new DenlyHttp('0.0.0.0', 808, { debug: false });
             }
         }
+
+        Memory.loader();
     }
 
     /**

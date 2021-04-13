@@ -78,6 +78,9 @@ export class EMemory {
         }
     }
 
+    /**
+     * 添加（设置） Memory 
+     */
     public set(key: string, value: string | Uint8Array, expire?: number) {
 
 
@@ -173,6 +176,26 @@ export class EMemory {
         return true;
     }
 
+    /**
+     * 延长过期时间
+     */
+    public extend(key: string, expire: number) {
+        const memTemp = this.memorys.get(this.thisGroup);
+
+        if (!memTemp) { return false; }
+
+        const data = memTemp.memorys.get(key);
+        if (data) {
+            data.expire = new Date().getTime() + (expire * 1000);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 清空当前所有 Memory 数据
+     */
     public clean(group?: string) {
 
         if (!group) {
@@ -232,9 +255,7 @@ export class EMemory {
      * 用于对数据进行持久化和更新监听
      */
     public async listener(options: listenerOption) {
-
-        this.loader();
-
+        // this.persistenceAll(options.http);
         setInterval(() => {
             this.persistenceAll(options.http);
         }, options.interval);
