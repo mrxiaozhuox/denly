@@ -14,4 +14,8 @@ let app: Denly = new Denly({
 
 app.config.memory.interval = 120 * 1000;
 
+Router.rule("/", () => {
+    return "Hello World";
+}, { method: "GET" });
+
 app.run();
