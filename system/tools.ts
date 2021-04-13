@@ -16,3 +16,4 @@ export { Router } from "./core/router.ts";
 export { Request, Response } from "./core/server/http.ts";
 export { HttpError } from "./support/error.ts";
 export { EConsole } from "./support/console.ts";
+export { Memory } from "./library/memory.ts";

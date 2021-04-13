@@ -95,7 +95,6 @@ export class Denly {
         } else {
             const origin: Uint8Array = await Deno.readAll(request.body);
             form = postDecoder(origin, request.headers);
-
         }
 
         // Request

@@ -14,7 +14,7 @@ interface memoryStruct {
     expire?: number,
     persistence: {
         path: string,
-        useable: boolean,
+        usable: boolean,
         time: number
     }
 }
@@ -105,7 +105,7 @@ export class EMemory {
             expire: expire,
             persistence: {
                 path: "unknown",
-                useable: true,
+                usable: true,
                 time: 0
             }
         });
@@ -121,9 +121,15 @@ export class EMemory {
 
         if (!memTemp) { return undefined; }
 
-        return memTemp.memorys.get(key);
+        if (this.overdue(key)) { return undefined; }
+
+
+        return memTemp.memorys.get(key)?.value;
     }
 
+    /**
+     * 删除 Memory 数据
+     */
     public delete(key: string) {
         const hash = createHash("md5");
         hash.update(this.thisGroup + "@" + key);
@@ -160,11 +166,65 @@ export class EMemory {
         if (!data.expire) { data.expire = 0; }
 
         if (data.expire > new Date().getTime() || data.expire == 0) {
-            this.delete(key);
             return false;
         }
 
+        this.delete(key);
         return true;
+    }
+
+    public clean(group?: string) {
+
+        if (!group) {
+            this.memorys = new Map();
+            try {
+                for (const file of Deno.readDirSync(this.memoryPath)) {
+                    Deno.removeSync(this.memoryPath + file.name);
+                }
+            } catch { return false; }
+            return true;
+        }
+
+        let tempGroup = this.thisGroup;
+
+        this.thisGroup = group;
+
+        for (const file of Deno.readDirSync(this.memoryPath)) {
+            let fileSec = file.name.split(".");
+
+            const filename = fileSec[0];
+            const suffix = fileSec[1];
+
+            if (suffix == "dat") { continue; }
+
+            let info = {
+                expire: 0,
+                checker: "",
+                symbol: ""
+            };
+
+            const decoder = new TextDecoder();
+
+            info = JSON.parse(decoder.decode(Deno.readFileSync(this.memoryPath + filename + ".idx")));
+
+            if (info.symbol.split(".")[0] == group) {
+                try {
+                    Deno.removeSync(this.memoryPath + filename + ".dat");
+                    Deno.removeSync(this.memoryPath + filename + ".idx");
+                } catch { }
+
+                this.delete(info.symbol.split(".")[1]);
+
+            } else {
+                continue;
+            }
+
+        }
+
+        this.memoryPath = tempGroup;
+
+        return true;
+
     }
 
     /**
@@ -252,7 +312,7 @@ export class EMemory {
             for (const [symbol, memory] of group.memorys) {
 
                 // 持久化是否支持
-                if (!memory.persistence || !memory.persistence.useable) { continue; } 4
+                if (!memory.persistence || !memory.persistence.usable) { continue; } 4
 
                 const hash = createHash("md5");
                 hash.update(this.thisGroup.toString() + "@" + symbol);
@@ -277,12 +337,12 @@ export class EMemory {
                 if (pers) {
                     pers.path = this.memoryPath + filename;
                     pers.time = new Date().getTime();
-                    pers.useable = true;
+                    pers.usable = true;
                 } else {
                     pers = {
                         path: "unknown",
                         time: new Date().getTime(),
-                        useable: false
+                        usable: false
                     }
                 }
 

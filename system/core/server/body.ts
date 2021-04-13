@@ -7,6 +7,8 @@
 
 import { Denly } from "../denly.ts";
 import { EConsole } from "../../support/console.ts"
+import { Memory } from "../../library/memory.ts";
+import { fileExist } from "../../library/fileSystem.ts";
 
 export interface RequestData {
     key: string,
@@ -197,6 +199,24 @@ export function uploadFileTemp(data: RequestData): string {
         path = Deno.makeTempFileSync({ prefix: "denly-upload-", suffix: ".temp" });
         let out = new TextEncoder().encode(data.value);
         Deno.writeFileSync(path, out);
+
+        Memory.group("uploadFile");
+        let oldInfo = Memory.get(data.key);
+
+        if (oldInfo) {
+            const decoder = new TextDecoder();
+
+            let oldFile = JSON.parse(decoder.decode(oldInfo));
+            if (fileExist(oldFile.file)){
+                Deno.remove(oldFile.file)
+            }
+        }
+
+        Memory.set(data.key, JSON.stringify({
+            file: path,
+            name: data.other?.get("filename")
+        }));
+
     } catch (error) {
         EConsole.error("upload file temp error.");
     }
