@@ -158,7 +158,7 @@ export class Denly {
         }
         EConsole.blank();
 
-        Memory.listener({ interval: this.config.memory.interval });
+        Memory.listener({ interval: this.config.memory.interval, http: this.http });
 
         for await (const request of http.serve) {
             this.proxy(request).then(({ code }) => {

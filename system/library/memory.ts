@@ -2,15 +2,17 @@
  * support.memory
  * @author mrxiaozhuox <mrxzx@qq.com>
  */
+import { createHash } from "https://deno.land/std@0.92.0/hash/mod.ts";
+
 import { DenlyHttp } from "../core/server/http.ts";
-import { dirExist, dirCheck } from "./fileSystem.ts";
+import { fileExist, dirCheck } from "./fileSystem.ts";
 
 import { DCons, EConsole } from "../tools.ts";
 
 interface memoryStruct {
     value: Uint8Array,
     expire?: number,
-    persistence?: {
+    persistence: {
         path: string,
         useable: boolean,
         time: number
@@ -18,15 +20,17 @@ interface memoryStruct {
 }
 
 interface memoryGroup {
-    memorys: Map<symbol, memoryStruct>,
+    memorys: Map<string, memoryStruct>,
     status: number
 }
 
 interface listenerOption {
-    interval: number
+    interval: number,
+    http: DenlyHttp
 }
 
-type mkey = symbol | string | number;
+const encoder = new TextEncoder();
+
 
 /**
  * EMemory: Memory Cache
@@ -36,15 +40,15 @@ type mkey = symbol | string | number;
  */
 export class EMemory {
 
-    private memorys: Map<symbol, memoryGroup> = new Map();
+    private memorys: Map<string, memoryGroup> = new Map();
 
-    private thisGroup: symbol;
-    private memoryPath: string = DCons.rootPath + "/runtime/memory";
+    private thisGroup: string;
+    private memoryPath: string = DCons.rootPath + "runtime/memory/";
 
     constructor() {
-        this.thisGroup = Symbol("default");
+        this.thisGroup = "default";
 
-        if (!dirCheck(DCons.rootPath + "/runtime/memory/")) {
+        if (!dirCheck(DCons.rootPath + "runtime/memory/")) {
             EConsole.error("Directory init error. [ runtime/memory ]");
             Deno.exit(5);
         }
@@ -52,19 +56,115 @@ export class EMemory {
 
     /**
      * 切换当前 Group
+     * 第二位参数可以关闭 Group 的持久化功能
      */
-    public group(symbol: mkey): void {
-        if (typeof symbol == "string" || typeof symbol == "number") {
-            symbol = Symbol(symbol);
-        }
+    public group(key: string, persistence: boolean = true): void {
+        this.thisGroup = key;
 
-        this.thisGroup = symbol;
+        let status = 0;
+        if (!persistence) { status = 2 } // 可以关闭持久化功能
+
+        let mem = this.memorys.get(key);
+
+        if (mem) {
+            mem.status = status;
+        } else {
+            const memTemp = {
+                memorys: new Map(),
+                status: status
+            };
+
+            this.memorys.set(key, memTemp);
+        }
     }
 
-    public set(key: mkey, value: string | Uint8Array | Deno.Reader) {
-        if (typeof key == "string" || typeof key == "number") {
-            key = Symbol(key);
+    public set(key: string, value: string | Uint8Array, expire?: number) {
+
+
+        let memTemp = this.memorys.get(this.thisGroup);
+
+        if (typeof value == "string") {
+            value = encoder.encode(value);
         }
+
+        if (expire) {
+            expire = new Date().getTime() + (expire * 1000);
+        } else {
+            expire = 0;
+        }
+
+        if (!memTemp) {
+            memTemp = {
+                memorys: new Map(),
+                status: 0
+            };
+        }
+
+        memTemp.memorys.set(key, {
+            value: value,
+            expire: expire,
+            persistence: {
+                path: "unknown",
+                useable: true,
+                time: 0
+            }
+        });
+
+        this.memorys.set(this.thisGroup, memTemp);
+    }
+
+    /**
+     * 读取 Memory 数据
+     */
+    public get(key: string) {
+        let memTemp = this.memorys.get(this.thisGroup);
+
+        if (!memTemp) { return undefined; }
+
+        return memTemp.memorys.get(key);
+    }
+
+    public delete(key: string) {
+        const hash = createHash("md5");
+        hash.update(this.thisGroup + "@" + key);
+        const filename = "M@0" + hash.toString();
+
+        if (fileExist(this.memoryPath + filename + ".dat")) {
+            try {
+                Deno.remove(this.memoryPath + filename + ".dat");
+                Deno.remove(this.memoryPath + filename + ".idx");
+            } catch (error) { }
+        }
+
+
+        const memTemp = this.memorys.get(this.thisGroup);
+
+        if (!memTemp) { return true; }
+
+        return memTemp.memorys.delete(key);
+    }
+
+
+    /**
+     * 检查 Memory 是否过期
+     */
+    public overdue(key: string) {
+
+        const memTemp = this.memorys.get(this.thisGroup);
+
+        if (!memTemp) { return true; }
+
+        const data = memTemp.memorys.get(key);
+        if (!data) { return true; }
+
+        if (!data.expire) { data.expire = 0; }
+
+        if (data.expire > new Date().getTime() || data.expire == 0) {
+            this.delete(key);
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -72,18 +172,77 @@ export class EMemory {
      * 用于对数据进行持久化和更新监听
      */
     public async listener(options: listenerOption) {
-        this.persistenceAll();
+
+        this.loader();
+
         setInterval(() => {
-            this.persistenceAll();
+            this.persistenceAll(options.http);
         }, options.interval);
+    }
+
+    public loader() {
+        const path = this.memoryPath;
+        for (const file of Deno.readDirSync(path)) {
+            if (!file.isFile) { continue; }
+
+            let fileSec = file.name.split(".");
+
+            const filename = fileSec[0];
+            const suffix = fileSec[1];
+
+            if (suffix == "idx") { continue; }
+
+            // Memory 数据读取（从持久化读取至内存）
+
+            const decoder = new TextDecoder();
+
+            let data = {
+                dat: new Uint8Array(),
+                idx: {
+                    expire: 0,
+                    checker: "",
+                    symbol: ""
+                },
+            }
+
+            // 读取 Memory 数据及其索引信息
+            data.dat = Deno.readFileSync(path + filename + ".dat");
+            data.idx = JSON.parse(decoder.decode(Deno.readFileSync(path + filename + ".idx")));
+
+
+            // 过期数据则不读取
+            if (data.idx.expire <= new Date().getTime() && data.idx.expire != 0) {
+                continue;
+            }
+
+            // MD5 Checker 错误
+            if (data.idx.checker != createHash('md5').update(data.dat).toString()) {
+                continue;
+            }
+
+
+
+            let symbol = data.idx.symbol.split(".");
+
+
+            this.group(symbol[0]);
+            this.set(symbol[1], data.dat, data.idx.expire);
+
+            Deno.removeSync(path + filename + ".dat");
+            Deno.removeSync(path + filename + ".idx");
+        }
     }
 
     /**
      * 将目前已存在的数据全部持久化
      * PS: 拒绝持久化的数据会被过滤
      */
-    public async persistenceAll() {
+    public async persistenceAll(http: DenlyHttp) {
         let memorys = this.memorys;
+
+        if (http.debug) {
+            EConsole.debug("{ Memory } 全局持久化处理中...")
+        }
 
         for (const [name, group] of memorys.entries()) {
 
@@ -95,10 +254,48 @@ export class EMemory {
                 // 持久化是否支持
                 if (!memory.persistence || !memory.persistence.useable) { continue; } 4
 
-                const filename: string = symbol.toString();
+                const hash = createHash("md5");
+                hash.update(this.thisGroup.toString() + "@" + symbol);
 
+                const filename = "M@0" + hash.toString();
+                const info = {
+                    expire: memory.expire || 0,
+                    checker: createHash("md5").update(memory.value).toString(),
+                    symbol: name + "." + symbol
+                };
+
+                // 写入持久化
+                try {
+                    Deno.writeFileSync(this.memoryPath + filename + ".dat", memory.value);
+                    Deno.writeTextFileSync(this.memoryPath + filename + ".idx", JSON.stringify(info));
+                } catch {
+                    EConsole.error(`[${name + "." + symbol}] 持久化保存失败...`); break;
+                }
+
+                let pers = this.memorys.get(name)?.memorys.get(symbol)?.persistence;
+
+                if (pers) {
+                    pers.path = this.memoryPath + filename;
+                    pers.time = new Date().getTime();
+                    pers.useable = true;
+                } else {
+                    pers = {
+                        path: "unknown",
+                        time: new Date().getTime(),
+                        useable: false
+                    }
+                }
+
+                let group = this.memorys.get(name);
+                if (group) {
+                    let mem = group.memorys.get(symbol);
+                    if (mem) {
+                        if (mem?.persistence) { mem.persistence = pers; }
+                        group.memorys.set(symbol, mem);
+                        this.memorys.set(name, group);
+                    }
+                }
             }
-
         }
 
     }

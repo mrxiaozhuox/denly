@@ -33,4 +33,10 @@ export class EConsole {
         let temp: string = `[ERROR] @${source}:> ${message}`;
         console.error(colorTab.Red + temp + colorTab.Clean);
     }
+
+
+    public static debug(message: string, source: string = "Denly"): void {
+        let temp: string = `[DEBUG] @${source}:> ${message}`;
+        console.error(colorTab.Green + temp + colorTab.Clean);
+    }
 }
