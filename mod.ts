@@ -1,7 +1,7 @@
 import { Denly } from "./system/core/denly.ts";
 import { Router } from './system/core/router.ts';
 
-import { DCons, Memory, Request, Session } from "./system/tools.ts";
+import { } from "./system/tools.ts";
 
 // 服务器运行
 let app: Denly = new Denly({

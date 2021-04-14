@@ -17,4 +17,4 @@ export { Request, Response } from "./core/server/http.ts";
 export { HttpError } from "./support/error.ts";
 export { EConsole } from "./support/console.ts";
 export { Memory } from "./library/memory.ts";
-export { Session } from "./core/session.ts";
+export { Session, Cookie } from "./core/storage.ts";

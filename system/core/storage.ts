@@ -1,9 +1,14 @@
-import { dirCheck } from "../library/fileSystem.ts";
-import { DCons } from "../tools.ts";
+import {
+    getCookies,
+    setCookie,
+    Cookie as ICookie
+} from "https://deno.land/std@0.92.0/http/cookie.ts";
+import { Response } from "https://deno.land/std@0.92.0/http/server.ts";
+
 import { Memory } from "../library/memory.ts";
 
 /**
- * core.session
+ * core.storage
  * @author mrxiaozhuox <mrxzx@qq.com>
  * 本 Session 系统使用 Denly Memory 程序实现
  */
@@ -74,4 +79,32 @@ class ESession implements SessionSystem {
     }
 }
 
+let storage: Array<ICookie> = [];
+
+class ECookie {
+
+    public set(key: string, value: string, options?: {
+        expires?: Date;
+        maxAge?: number;
+        domain?: string;
+        path?: string;
+        secure?: boolean;
+        httpOnly?: boolean;
+        sameSite?: "Strict" | "Lax" | "None";
+        unparsed?: string[];
+    }) {
+
+        let data = { name: key, value: value, ...options };
+
+        storage.push(data);
+    }
+}
+
 export let Session: SessionSystem = new ESession();
+export let Cookie = new ECookie();
+
+export function bindCookie(response: Response) {
+    storage.forEach(c => {
+        setCookie(response, c);
+    });
+}

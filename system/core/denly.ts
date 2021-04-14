@@ -13,6 +13,7 @@ import { ServerRequest } from "https://deno.land/std@0.92.0/http/server.ts";
 import { Server, DenlyHttp, HttpState } from "./server/http.ts";
 import { httpInit, httpResp } from "./server/http.ts";
 import { postDecoder, getDecoder, RequestData } from "./server/body.ts";
+import { bindCookie, Cookie } from "./storage.ts";
 
 // Denly Support - 辅助程序 
 import { EConsole, colorTab } from "../support/console.ts";
@@ -128,12 +129,16 @@ export class Denly {
             request.respond({ status: 301, body: "", headers: header });
         }
 
-        // 返回最终结果
-        request.respond({
+        let result = {
             status: status,
             body: context,
             headers: resp.header
-        });
+        };
+
+        bindCookie(result);
+
+        // 返回最终结果
+        request.respond(result);
 
         return { code: status };
     }
