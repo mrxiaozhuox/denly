@@ -55,11 +55,12 @@ export class DenlyHttp {
     }
 }
 
+let header = new Headers();
 
 interface ReqInfos {
     _args: Array<RequestData>,
     _form: Array<RequestData>,
-    redirect: string
+    redirect: string,
 }
 
 let reqinfo: ReqInfos = {
@@ -129,6 +130,25 @@ class DResponse {
             reqinfo.redirect = "#";
         }
     }
+
+    /**
+     * 设置 Header
+     */
+    public header(key: string, value: string, append?: boolean) {
+        if (append) {
+            header.append(key, value);
+        } else {
+            header.set(key, value);
+        }
+    }
+
+    /**
+     * 返回 Json 代码
+     */
+    public json(data: object) {
+        header.set("Content-Type", "application/json");
+        return JSON.stringify(data);
+    }
 }
 
 export let Response = new DResponse();
@@ -144,7 +164,6 @@ interface httpResponse {
 }
 
 export function httpResp(): httpResponse {
-    let header = new Headers();
 
     let redirect = reqinfo.redirect;
 

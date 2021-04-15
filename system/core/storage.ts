@@ -3,7 +3,8 @@ import {
     setCookie,
     Cookie as ICookie
 } from "https://deno.land/std@0.92.0/http/cookie.ts";
-import { Response } from "https://deno.land/std@0.92.0/http/server.ts";
+import { Response, ServerRequest } from "https://deno.land/std@0.92.0/http/server.ts";
+import { createHash } from "https://deno.land/std@0.92.0/hash/mod.ts";
 
 import { Memory } from "../library/memory.ts";
 
@@ -79,7 +80,9 @@ class ESession implements SessionSystem {
     }
 }
 
+
 let storage: Array<ICookie> = [];
+let loader: Map<string, string> = new Map();
 
 class ECookie {
 
@@ -98,6 +101,35 @@ class ECookie {
 
         storage.push(data);
     }
+
+    /**
+     * 读取数据
+     */
+    public get(key: string) {
+        return loader.get(key);
+    }
+
+    /**
+     * 数据是否存在
+     */
+    public has(key: string) {
+
+        if (this.get(key)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 删除 Cookie
+     */
+    public delete(key: string) {
+        this.set(key, "", {
+            expires: new Date(0),
+        });
+    }
+
 }
 
 export let Session: SessionSystem = new ESession();
@@ -107,4 +139,15 @@ export function bindCookie(response: Response) {
     storage.forEach(c => {
         setCookie(response, c);
     });
+    let denlyid = createHash('md5').update(new Date().getTime() + "@DENLYID").toString();
+    setCookie(response, { name: "DENLYID", value: denlyid });
+}
+
+export function loadCookie(request: ServerRequest) {
+    const cookies = getCookies(request);
+    let result = JSON.parse(JSON.stringify(cookies));
+
+    for (const key in result) {
+        loader.set(key, result[key]);
+    }
 }

@@ -1,21 +1,14 @@
 import { Denly } from "./system/core/denly.ts";
-import { Router } from './system/core/router.ts';
 
-import { } from "./system/tools.ts";
+import { Router, Response, Cookie } from "./system/dev.ts";
 
-// 服务器运行
-let app: Denly = new Denly({
+
+let app = new Denly({
     hostname: "0.0.0.0",
     port: 808,
     options: {
         debug: true
     }
 });
-
-app.config.memory.interval = 120 * 1000;
-
-Router.rule("/", () => {
-    return "Hello World";
-}, { method: "GET" });
 
 app.run();

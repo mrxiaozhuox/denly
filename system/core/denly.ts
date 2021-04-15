@@ -13,7 +13,7 @@ import { ServerRequest } from "https://deno.land/std@0.92.0/http/server.ts";
 import { Server, DenlyHttp, HttpState } from "./server/http.ts";
 import { httpInit, httpResp } from "./server/http.ts";
 import { postDecoder, getDecoder, RequestData } from "./server/body.ts";
-import { bindCookie, Cookie } from "./storage.ts";
+import { bindCookie, Cookie, loadCookie } from "./storage.ts";
 
 // Denly Support - 辅助程序 
 import { EConsole, colorTab } from "../support/console.ts";
@@ -22,7 +22,7 @@ import { EConsole, colorTab } from "../support/console.ts";
 import { Router, RouteController } from '../core/router.ts';
 
 // Denly Tools
-import { DCons } from "../tools.ts";
+import { DConst } from "../dev.ts";
 
 // Denly Memory
 import { Memory } from "../library/memory.ts";
@@ -42,6 +42,10 @@ interface DeConfig {
     },
     memory: {
         interval: number
+    },
+    controller: {
+        usable: boolean,
+        path: string
     }
 }
 
@@ -49,11 +53,15 @@ export class Denly {
 
     public config: DeConfig = {
         storage: {
-            log: DCons.rootPath + "/runtime/log",
-            template: DCons.rootPath + "/template"
+            log: DConst.rootPath + "/runtime/log",
+            template: DConst.rootPath + "/template"
         },
         memory: {
-            interval: 60 * 1000
+            interval: 360 * 1000
+        },
+        controller: {
+            usable: false,
+            path: ""
         }
     };
 
@@ -92,6 +100,8 @@ export class Denly {
 
         let context: Uint8Array | Deno.Reader | string = "";
 
+        loadCookie(request);
+
         // 除去 GET 请求才支持 FormData, Urlencoded, Raw, File 等提交
         if (request.method == "GET") {
             args = getDecoder(request.url);
@@ -100,7 +110,7 @@ export class Denly {
             form = postDecoder(origin, request.headers);
         }
 
-        // Request
+        // Request 绑定
         httpInit({ args, form });
 
         let target = RouteController.processer(sections, request.method);
@@ -135,6 +145,7 @@ export class Denly {
             headers: resp.header
         };
 
+        // 将框架 Cookie 绑定至程序
         bindCookie(result);
 
         // 返回最终结果
