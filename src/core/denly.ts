@@ -11,21 +11,21 @@ import { ServerRequest } from "https://deno.land/std@0.92.0/http/server.ts";
 
 // Denly 服务器处理器
 import { Server, DenlyHttp, HttpState } from "./server/http.ts";
-import { httpInit, httpResp } from "./server/http.ts";
+import { httpInit, httpResp, Request, Response } from "./server/http.ts";
 import { postDecoder, getDecoder, RequestData } from "./server/body.ts";
-import { bindCookie, Cookie, loadCookie } from "./storage.ts";
+import { bindCookie, loadCookie } from "./storage.ts";
 
 // Denly Support - 辅助程序 
 import { EConsole, colorTab } from "../support/console.ts";
 
 // Denly Router 路由程序
-import { Router, RouteController } from '../core/router.ts';
-
-// Denly Tools
-import { DConst } from "../dev.ts";
+import { RouteController, Router } from '../core/router.ts';
 
 // Denly Memory
 import { Memory } from "../library/memory.ts";
+
+import { _dirname } from "../../mod.ts";
+
 
 export interface DeOption {
     hostname: string,
@@ -53,8 +53,8 @@ export class Denly {
 
     public config: DeConfig = {
         storage: {
-            log: DConst.rootPath + "/runtime/log",
-            template: DConst.rootPath + "/template"
+            log: _dirname + "/runtime/log",
+            template: _dirname + "/template"
         },
         memory: {
             interval: 360 * 1000
@@ -64,6 +64,8 @@ export class Denly {
             path: ""
         }
     };
+
+    public route = Router;
 
     private http: DenlyHttp;
 
@@ -100,7 +102,7 @@ export class Denly {
 
         let context: Uint8Array | Deno.Reader | string = "";
 
-        loadCookie(request);
+        loadCookie(request); // 读取存在的 Cookie
 
         // 除去 GET 请求才支持 FormData, Urlencoded, Raw, File 等提交
         if (request.method == "GET") {
@@ -110,18 +112,19 @@ export class Denly {
             form = postDecoder(origin, request.headers);
         }
 
-        // Request 绑定
+        // Request 数据绑定（用于 Request 数据获取）
         httpInit({ args, form });
 
+        // 路由解析器
         let target = RouteController.processer(sections, request.method);
 
         if (target) {
             if (typeof target.route == "function") {
                 try {
-                    context = target.route(...target.parms);
+                    context = target.route(Request, Response, [...target.parms]);
                 } catch (error) {
-                    if (error?._httperror) {
-                        status = error?.code || 500;
+                    if (typeof error == "number") {
+                        status = error;
                     } else {
                         status = 500;
                     }
@@ -133,6 +136,7 @@ export class Denly {
 
         let resp = httpResp();
 
+        // Redirect 处理器（重定向）
         if (resp.redirect != "#" && resp.redirect != "") {
             let header: Headers = new Headers();
             header.set("Location", resp.redirect);
@@ -144,6 +148,12 @@ export class Denly {
             body: context,
             headers: resp.header
         };
+
+        // Error
+        if (resp.error != 200 || status != 200) {
+            if (status == 200) status = resp.error;
+            result = RouteController.httpError(status);
+        }
 
         // 将框架 Cookie 绑定至程序
         bindCookie(result);
@@ -166,8 +176,8 @@ export class Denly {
 
         let server: Server = http.serve;
 
+        // 服务器信息渲染
         let path = colorTab.Blue + "http://" + host + ':' + port + colorTab.Clean;
-
         EConsole.blank();
         EConsole.info(`HTTP Server ${path} 已启动！`);
         if (http.debug) {

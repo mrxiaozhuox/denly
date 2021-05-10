@@ -1,5 +1,8 @@
 import { pathParser } from "./denly.ts";
 
+import { DRequest, DResponse } from "./server/http.ts";
+import { Request, Response } from "./server/http.ts";
+
 /**
  * core.router
  * @author mrxiaozhuox <mrxzx@qq.com>
@@ -9,11 +12,15 @@ interface ruleOption {
     method: string
 }
 
-type Controller = Function | string;
+type Controller = (req: DRequest, resp: DResponse, parms: object) => any;
+type ErrorContrl = () => { header: Headers, body: string | Uint8Array };
 
 // 路由信息
 let _routers: Map<string, Controller> = new Map();
 let _optinfo: Map<string, ruleOption> = new Map();
+
+// Error 渲染器
+let _errors: Map<number, ErrorContrl> = new Map();
 
 // RegExp 信息
 let _reginfo: Map<string, RegExp> = new Map();
@@ -57,6 +64,22 @@ class RouteManager {
         return this.rule(path, controller, {
             method: "POST"
         });
+    }
+
+    /**
+     * 绑定 Error 控制器
+     */
+    public fallback(code: number | Array<number>, controller: ErrorContrl): RouteManager {
+
+        if (typeof code == "object") {
+            code.forEach(element => {
+                _errors.set(element, controller);
+            });
+        } else {
+            _errors.set(code, controller);
+        }
+
+        return this;
     }
 
 }
@@ -150,9 +173,40 @@ export class RouteController {
     }
 
     /**
+     * 返回 httpError 结果
+     */
+    public static httpError(code: number): { status: number, body: Uint8Array, headers: Headers } {
+
+        const encoder = new TextEncoder();
+
+        let header = new Headers();
+        let context: Uint8Array = new Uint8Array();
+
+        // 检查 Error 是否存在
+        const controller = _errors.get(code);
+        if (controller) {
+            let result = controller();
+            header = result.header;
+            let data = result.body;
+
+            if (typeof data == "string") {
+                context = encoder.encode(data);
+            } else {
+                context = data;
+            }
+        }
+
+        return {
+            status: code,
+            body: context,
+            headers: header
+        };
+    }
+
+    /**
      * 获取路由数据信息
      */
     public static list() {
-        return [_routers, _optinfo];
+        return [_routers, _optinfo, _errors];
     }
 }

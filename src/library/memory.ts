@@ -2,12 +2,14 @@
  * support.memory
  * @author mrxiaozhuox <mrxzx@qq.com>
  */
+ import { _dirname } from "../../mod.ts";
+
 import { createHash } from "https://deno.land/std@0.92.0/hash/mod.ts";
 
 import { DenlyHttp } from "../core/server/http.ts";
 import { fileExist, dirCheck } from "./fileSystem.ts";
 
-import { DConst, EConsole } from "../dev.ts";
+import { EConsole } from "../support/console.ts"
 
 interface memoryStruct {
     value: Uint8Array,
@@ -43,12 +45,14 @@ export class EMemory {
     private memorys: Map<string, memoryGroup> = new Map();
 
     private thisGroup: string;
-    private memoryPath: string = DConst.rootPath + "runtime/memory/";
+    private memoryPath: string;
 
     constructor() {
-        this.thisGroup = "default";
 
-        if (!dirCheck(DConst.rootPath + "runtime/memory/")) {
+        this.thisGroup = "default";
+        this.memoryPath = _dirname + "runtime/memory/";
+
+        if (!dirCheck(_dirname + "runtime/memory/")) {
             EConsole.error("Directory init error. [ runtime/memory ]");
             Deno.exit(5);
         }

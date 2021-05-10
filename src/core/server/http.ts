@@ -1,6 +1,7 @@
 import { serve, Server } from "https://deno.land/std@0.92.0/http/server.ts";
 import { RequestData } from "./body.ts";
 import { Memory } from "../../library/memory.ts";
+import { fileExist } from "../../library/fileSystem.ts";
 
 interface StartOption {
     debug?: boolean
@@ -61,15 +62,17 @@ interface ReqInfos {
     _args: Array<RequestData>,
     _form: Array<RequestData>,
     redirect: string,
+    error: number
 }
 
 let reqinfo: ReqInfos = {
     _args: [],
     _form: [],
-    redirect: "#" // # 代表不进行重定向（默认）
+    redirect: "#", // # 代表不进行重定向（默认）
+    error: 200
 };
 
-class DRequest {
+export class DRequest {
 
     /**
      * Get 参数获取
@@ -118,7 +121,7 @@ class DRequest {
 
 export let Request = new DRequest();
 
-class DResponse {
+export class DResponse {
 
     /**
      * 重定向设置 
@@ -149,6 +152,25 @@ class DResponse {
         header.set("Content-Type", "application/json");
         return JSON.stringify(data);
     }
+
+    /**
+     * 返回 文件内容
+     */
+    public file(file: string) {
+        if (typeof file == "string") {
+            if (fileExist(file)) {
+                return Deno.readFileSync(file);
+            } else {
+                throw new Error("file not found");
+            }
+        }
+        return new Uint8Array();
+    }
+
+    public abort(code: number = 404) {
+        reqinfo.error = code;
+    }
+
 }
 
 export let Response = new DResponse();
@@ -160,17 +182,21 @@ export function httpInit(data: { args: Array<RequestData>, form: Array<RequestDa
 
 interface httpResponse {
     header: Headers,
-    redirect: string
+    redirect: string,
+    error: number
 }
 
 export function httpResp(): httpResponse {
 
     let redirect = reqinfo.redirect;
+    let error = reqinfo.error;
 
     reqinfo.redirect = "#";
+    reqinfo.error = 200;
 
     return {
         header: header,
-        redirect: redirect
+        redirect: redirect,
+        error: error
     };
 }

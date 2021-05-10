@@ -1,11 +1,35 @@
 # Denly Framework
 
-> 本项目是我 **练习 & 学习** Deno 和 Typescript 时开发的。
+> A study & practice project for Deno...
 
-## 实现功能
+Waiting for a stable release of Deno...
 
-- 路由注册功能（支持访问类型限制）
-- GET & POST 数据获取（支持文件上传）
-- 基本的 Response 操作（如重定向）
-- Memory 系统（缓存系统 - 带持久化）
-- Session （基于 Memory 系统）
+## Functions
+
+- Router System
+- Achieve Args & Form Data
+- Response System (redirect,abort)
+- Memory System (useful cache)
+- Session (realized in memory sys)
+
+## Try me
+
+You just need import one file on github (or gitee)
+
+```typescript
+import { Denly } from "./mod.ts";
+
+let app = new Denly({ hostname: "127.0.0.1",port: 808 });
+
+app.route.get("/", () => {
+    return "Hello Denly!";
+});
+
+app.run();
+```
+
+It's easy to use, you don't need to download other file, just import the package from online.
+
+## Developer
+
+Author: mrxiaozhuox <mrxzx@qq.com> - ZhuoEr Liu
