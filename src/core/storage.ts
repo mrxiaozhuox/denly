@@ -132,9 +132,13 @@ class ECookie {
 
 }
 
+/** Session Manager */
 export let Session: SessionSystem = new ESession();
+
+/** Cookie Manager */
 export let Cookie = new ECookie();
 
+/** bindCokkie to Response */
 export function bindCookie(response: Response) {
     storage.forEach(c => {
         setCookie(response, c);
@@ -143,6 +147,7 @@ export function bindCookie(response: Response) {
     setCookie(response, { name: "DENLYID", value: denlyid });
 }
 
+/** loadCookie from request */
 export function loadCookie(request: ServerRequest) {
     const cookies = getCookies(request);
     let result = JSON.parse(JSON.stringify(cookies));

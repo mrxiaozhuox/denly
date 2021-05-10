@@ -1,5 +1,6 @@
 /**
- * 检测一个目录是否存在
+ * Function: dirExist
+ * determine whether the directory exists
  */
 export function dirExist(path: string) {
     try {
@@ -12,7 +13,8 @@ export function dirExist(path: string) {
 }
 
 /**
- * 如果一个目录不存在，则自动创建
+ * Function: dirCheck
+ * if directory not found, then create a new 
  */
 export function dirCheck(path: string) {
     if (!dirExist(path)) {
@@ -25,7 +27,8 @@ export function dirCheck(path: string) {
 }
 
 /**
- * 判断一个文件是否存在
+ * Function: dirExist
+ * determine whether the file exists
  */
 export function fileExist(path: string) {
     try {

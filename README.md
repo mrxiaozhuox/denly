@@ -15,7 +15,7 @@
 You just need import one file on github (or gitee)
 
 ```typescript
-import { Denly } from "./mod.ts";
+import { Denly } from "https://deno.land/x/denly@V0.2/mod.ts";
 
 let app = new Denly({ hostname: "127.0.0.1",port: 808 });
 

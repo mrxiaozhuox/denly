@@ -5,7 +5,7 @@
  */
 
 /** Useful Constants */
-export { _dirname } from "./library/constant.ts";
+export { _dirname, _version } from "./library/constant.ts";
 
 /** Main Object - Denly */
 export { Denly } from "./core/denly.ts";

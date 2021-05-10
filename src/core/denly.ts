@@ -51,6 +51,10 @@ interface DeConfig {
 
 export class Denly {
 
+    /**
+     * Denly.config [var]
+     * application configs
+     */
     public config: DeConfig = {
         storage: {
             log: _dirname + "/runtime/log",
@@ -65,8 +69,16 @@ export class Denly {
         }
     };
 
+    /**
+     * Denly.route [var]
+     * router reference
+     */
     public route = Router;
 
+    /**
+     * Denly.http [var]
+     * http object
+     */
     private http: DenlyHttp;
 
     constructor(options?: DeOption, http?: DenlyHttp) {
@@ -89,7 +101,8 @@ export class Denly {
     }
 
     /**
-     * 数据请求处理
+     * Denly.proxy [func]
+     * proxy the request (private method)
      */
     public async proxy(request: ServerRequest): Promise<HttpState> {
 
@@ -165,7 +178,9 @@ export class Denly {
     }
 
     /**
-     * Denly Server 运行程序
+     * Denly.run [func]
+     * start the application
+     * loop to listening request
      */
     public async run() {
 
@@ -196,6 +211,10 @@ export class Denly {
         }
     }
 
+    /**
+     * Denly.reqinfo [func]
+     * display the request info
+     */
     private static reqinfo(r: ServerRequest, code: number): void {
 
         let status: string = "";
@@ -211,7 +230,8 @@ export class Denly {
 }
 
 /**
- * 访问 URL 解析程序
+ * Function: pathParser
+ * parse the url
  */
 export function pathParser(url: string) {
     if (url.includes("?")) {

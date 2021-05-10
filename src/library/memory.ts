@@ -35,7 +35,7 @@ const encoder = new TextEncoder();
 
 
 /**
- * EMemory: Memory Cache
+ * Memory [obj]
  * 
  * EMemory 主要为 Denly 提供缓存服务！
  * Session、FileTemp 等都将基于本程序开发！

@@ -25,10 +25,15 @@ let _errors: Map<number, ErrorContrl> = new Map();
 // RegExp 信息
 let _reginfo: Map<string, RegExp> = new Map();
 
+/**
+ * RouteManager [obj]
+ * Route Manager
+ */
 class RouteManager {
 
     /**
-     * 路由注册函数 Rule 
+     * RouteManager.rule [func]
+     * register rule
      */
     public rule(path: string, controller: Controller, options?: ruleOption): RouteManager {
 
@@ -43,13 +48,18 @@ class RouteManager {
         return this;
     }
 
+    /**
+     * RouteManager.regex [func]
+     * register regex
+     */
     public regex(sign: string, regex: RegExp): RouteManager {
         _reginfo.set(sign, regex);
         return this;
     }
 
     /**
-     * Get 路由注册（简洁）
+     * RouteManager.get [func]
+     * register rule
      */
     public get(path: string, controller: Controller): RouteManager {
         return this.rule(path, controller, {
@@ -58,7 +68,8 @@ class RouteManager {
     }
 
     /**
-     * Post 路由注册（简洁）
+     * RouteManager.post [func]
+     * register rule
      */
     public post(path: string, controller: Controller): RouteManager {
         return this.rule(path, controller, {
@@ -67,7 +78,8 @@ class RouteManager {
     }
 
     /**
-     * 绑定 Error 控制器
+     * RouteManager.fallback [func]
+     * bind error controller
      */
     public fallback(code: number | Array<number>, controller: ErrorContrl): RouteManager {
 
