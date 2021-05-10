@@ -2,8 +2,6 @@
 
 > A study & practice project for Deno...
 
-Waiting for a stable release of Deno...
-
 ## Functions
 
 - Router System
@@ -12,7 +10,7 @@ Waiting for a stable release of Deno...
 - Memory System (useful cache)
 - Session (realized in memory sys)
 
-## Try me
+## Try it
 
 You just need import one file on github (or gitee)
 
@@ -32,4 +30,6 @@ It's easy to use, you don't need to download other file, just import the package
 
 ## Developer
 
-Author: mrxiaozhuox <mrxzx@qq.com> - ZhuoEr Liu
+Author: ZhuoEr Liu <mrxzx@qq.com>
+
+I am a back-end engineer and have recently been learning how to use Deno.

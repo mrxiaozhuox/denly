@@ -2,7 +2,7 @@
  * support.memory
  * @author mrxiaozhuox <mrxzx@qq.com>
  */
- import { _dirname } from "../../mod.ts";
+ import { _dirname } from "../mod.ts";
 
 import { createHash } from "https://deno.land/std@0.92.0/hash/mod.ts";
 

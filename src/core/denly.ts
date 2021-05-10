@@ -24,7 +24,7 @@ import { RouteController, Router } from '../core/router.ts';
 // Denly Memory
 import { Memory } from "../library/memory.ts";
 
-import { _dirname } from "../../mod.ts";
+import { _dirname } from "../mod.ts";
 
 
 export interface DeOption {

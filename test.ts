@@ -1,6 +1,6 @@
 // This is a test code for Denly Framework
 
-import { Denly } from "./mod.ts";
+import { Denly } from "./src/mod.ts";
 
 let app = new Denly({
     hostname: "127.0.0.1",
