@@ -5,15 +5,15 @@
 ## Functions
 
 - Router System
-- Achieve Args & Form Data
+- Get Args & Form Data
 - Response System (redirect,abort)
 - Memory System (useful cache)
 - Session (realized in memory sys)
-- Hot-Loading (automatically restart after editing the file)
+- Hot-Loading (automatic restart after editing the file)
 
 ## Try it
 
-You just need import one file on github (or gitee)
+You just need import the file from github (or gitee)
 
 ```typescript
 import { Denly } from "https://deno.land/x/denly@V0.2/mod.ts";
@@ -29,7 +29,7 @@ app.run();
 
 It's easy to use, you don't need to download other file, just import the package from online.
 
-### hot-loading
+### Hot-loading
 
 if you want the server automatic restart after the file edited, then you can use **hot-loading**.
 
