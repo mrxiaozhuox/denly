@@ -14,20 +14,30 @@
  * 
  */
 
-import { Watcher } from "./mod.ts";
+import { Watcher, EConsole } from "./mod.ts";
+import { fileExist } from "./library/fileSystem.ts"
 
-let target: string = "";
+if (import.meta.main) {
+    let target: string = "";
 
-if (Deno.args.length > 0) {
-    target = Deno.args[0];
-}
+    if (Deno.args.length > 0) {
+        target = Deno.args[0];
+    }
 
-while (true) {
-    let p = Deno.run({
-        cmd: ['Deno', 'run', '-A', target, '-CHILD'],
-        stderr: 'inherit',
-        stdout: 'inherit'
-    });
+    while (true) {
 
-    await p.status();
+        if (!fileExist(target)) {
+            EConsole.error(`File: '${target}' is not found.`); break;
+        }
+
+        let p = Deno.run({
+            cmd: ['Deno', 'run', '-A', target, '-CHILD'],
+            stderr: 'inherit',
+            stdout: 'inherit'
+        });
+
+        await p.status();
+    }
+} else {
+    EConsole.warn("Please use 'debug.ts' as the main program.");
 }

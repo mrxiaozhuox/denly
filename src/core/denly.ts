@@ -11,7 +11,7 @@ import { ServerRequest } from "https://deno.land/std@0.92.0/http/server.ts";
 
 // Denly 服务器处理器
 import { Server, DenlyHttp, HttpState } from "./server/http.ts";
-import { httpInit, httpResp, Request, Response } from "./server/http.ts";
+import { httpInit, httpResp, Request, Response, DRequest, DResponse } from "./server/http.ts";
 import { postDecoder, getDecoder, RequestData } from "./server/body.ts";
 import { bindCookie, loadCookie } from "./storage.ts";
 
@@ -88,6 +88,18 @@ export class Denly {
     public deop: DeOption;
 
     /**
+     * Denly.request
+     * request objectt
+     */
+    public request: DRequest = Request;
+    
+    /**
+     * Denly.response
+     * response objectt
+     */
+    public response: DResponse = Response;
+
+    /**
      * Denly.deprecated
      * The old object after the restart
      */
@@ -155,7 +167,8 @@ export class Denly {
         if (target) {
             if (typeof target.route == "function") {
                 try {
-                    context = target.route(Request, Response, [...target.parms]);
+                    // exec controller
+                    context = target.route(...target.parms);
                 } catch (error) {
                     if (typeof error == "number") {
                         status = error;
@@ -215,9 +228,9 @@ export class Denly {
         // 服务器信息渲染
         let path = colorTab.Blue + "http://" + host + ':' + port + colorTab.Clean;
         EConsole.blank();
-        EConsole.info(`Denly Server ${path} 已启动！`);
+        EConsole.info(`Denly Server ${path} started！`);
         if (http.debug) {
-            EConsole.warn("开启了 Debug 模式（仅用于开发环境）");
+            EConsole.warn("Debug mode enabled (for development environment only)");
         }
         EConsole.blank();
 

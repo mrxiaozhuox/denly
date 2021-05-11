@@ -46,7 +46,7 @@ export class Watcher {
     public static defaultCallback(status: string) {
         if (this.app.deop.options?.debug) {
             if (Deno.args.length > 0 && Deno.args[0] == "-CHILD") {
-                EConsole.debug("检测到文件更新，服务器自动重启！");
+                EConsole.debug("The file has changed, server has been restarted!");
                 Deno.exit(0);
             }
         }

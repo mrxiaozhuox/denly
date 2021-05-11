@@ -45,4 +45,8 @@ export { Memory } from "./library/memory.ts";
 /** Session & Cookie System */
 export { Session, Cookie } from "./core/storage.ts";
 
+/** File Edit Listener [Watcher] */
 export { Watcher } from "./support/watcher.ts";
+
+/** Request & Response */
+export { Request, Response, DRequest, DResponse } from "./core/server/http.ts"

@@ -12,7 +12,7 @@ interface ruleOption {
     method: string
 }
 
-type Controller = (req: DRequest, resp: DResponse, parms: object) => any;
+type Controller = (...parms: string[]) => any;
 type ErrorContrl = () => { header: Headers, body: string | Uint8Array };
 
 // 路由信息
@@ -118,7 +118,7 @@ export class RouteController {
     public static processer(sections: Array<string>, method: string) {
 
         let result: string = "";
-        let parms: Array<String> = [];
+        let parms: Array<string> = [];
 
         _routers.forEach((value, key) => {
 
@@ -152,8 +152,7 @@ export class RouteController {
                         let regex = _reginfo.get(sign);
                         if (!regex) { return null; }
 
-
-                        if (regex.test(sections[index])) {
+                        if (!regex.test(sections[index])) {
                             flag = true; // 匹配错误，终止匹配
                         } else {
                             parms.push(sections[index]);
