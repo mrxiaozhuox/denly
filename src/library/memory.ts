@@ -2,7 +2,7 @@
  * support.memory
  * @author mrxiaozhuox <mrxzx@qq.com>
  */
- import { _dirname } from "../mod.ts";
+import { _dirname } from "../mod.ts";
 
 import { createHash } from "https://deno.land/std@0.92.0/hash/mod.ts";
 
@@ -322,10 +322,10 @@ export class EMemory {
      * 将目前已存在的数据全部持久化
      * PS: 拒绝持久化的数据会被过滤
      */
-    public async persistenceAll(http: DenlyHttp) {
+    public async persistenceAll(http?: DenlyHttp) {
         let memorys = this.memorys;
 
-        if (http.debug) {
+        if (http?.debug) {
             EConsole.debug("{ Memory } 全局持久化处理中...")
         }
 

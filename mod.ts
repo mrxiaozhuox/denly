@@ -1,9 +1,6 @@
 // This is a test code for Denly Framework
 
-import {
-    Denly,
-    Response
-} from "./src/mod.ts";
+import { Denly } from "./src/mod.ts";
 
 let app = new Denly({
     hostname: "127.0.0.1",
@@ -13,6 +10,6 @@ let app = new Denly({
     }
 });
 
+app.route.get("/",() => { return "<h1>Hello Denly</h1>"; });
 
-// app.route.get("/");
 app.run();

@@ -1,32 +1,94 @@
-## Welcome to GitHub Pages
+## Web Framework for Deno
 
-You can use the [editor on GitHub](https://github.com/mrxiaozhuox/Denly/edit/master/docs/index.md) to maintain and preview the content for your website in Markdown files.
+### Functions
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+* Route System
+* Args & Form Data
+* Response Method ( Redirect, Abort, Json )
+* Memory System ( memory cache )
+* Session & Cookie Manager ( realized in memory system )
+* Hot-Loading ( automatic restart after editing the file )
 
-### Markdown
+### Some Examples
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Here are some examples.
 
-```markdown
-Syntax highlighted code block
+#### Simple Server
 
-# Header 1
-## Header 2
-### Header 3
+```typescript
+import { Denly } from "https://deno.land/x/denly@V0.21/mod.ts";
 
-- Bulleted
-- List
+let app = new Denly({ hostname: "127.0.0.1",port: 808 });
 
-1. Numbered
-2. List
+app.route.get("/", () => {
+    return "Hello Denly!";
+});
 
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+app.run();
 ```
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+#### Route Manager
+
+```typescript
+let router = app.route;
+
+// Basic router register:
+router.rule("/",() => { return "index page"; });
+
+// dynamic path register:
+router.rule("/:letter",(name: string) => {
+    return `Hello ${name}!`;
+});
+
+// regex sign register:
+router.regex("number", /^[0-9]*$/g); // use for dynamic path register.
+
+// fallback register:
+router.fallback(404,() => {
+    return {
+        header: new Headers(),
+        body: "<h1>404 Not Found</h1>"
+    };
+});
+```
+
+#### Args & Form Data
+
+```typescript
+let req = app.request;
+router.get("/",() => {
+    return "Hello " + req.args("name") + "!";
+});
+// 127.0.0.1:808?name=Sam - Hello Sam!
+
+router.post("/info",() => {
+   return "Form Data: " + req.form("data"); 
+});
+// Use post to request '/info'
+```
+
+#### Hot-loading
+
+```shell
+deno run --allow-run https://deno.land/x/denly@V0.21/debug.ts ./mod.ts
+```
+
+> PS: you need open debug option in the './mod.ts' file.
+
+#### Memory System
+
+```typescript
+import { Memory } from "https://deno.land/x/denly@V0.21/mod.ts";
+
+Memory.set("foo","bar");  // the data will save in the memory.
+console.log(Memory.get("foo")); // from memory to get the data.
+Memory.delete("foo"); // delete this data.
+Memory.persistenceAll(); // save all data to the file. (autoexec)
+Memory.clean(); // clean all data (include file data)
+Memory.group('session',false); // change group (second parameter can close file-cahce)
+```
+
+
 
 ### Jekyll Themes
 
