@@ -11,7 +11,9 @@ let app = new Denly({
 });
 
 app.route.get("/", () => {
-    return "Hello Denly!";
+    return "<h1>Hello Denly!</h1>";1
 });
 
-app.run();
+let test = new Promise((value) => {
+    app.run();
+});

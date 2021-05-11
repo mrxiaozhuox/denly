@@ -9,6 +9,7 @@
 - Response System (redirect,abort)
 - Memory System (useful cache)
 - Session (realized in memory sys)
+- Hot-Loading (automatically restart after editing the file)
 
 ## Try it
 

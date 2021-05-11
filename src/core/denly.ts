@@ -24,7 +24,7 @@ import { RouteController, Router } from '../core/router.ts';
 // Denly Memory
 import { Memory } from "../library/memory.ts";
 
-import { _dirname } from "../mod.ts";
+import { _dirname, _version, Watcher } from "../mod.ts";
 
 
 export interface DeOption {
@@ -81,12 +81,27 @@ export class Denly {
      */
     private http: DenlyHttp;
 
+    /**
+     * Denly.deop
+     * denly server options (use to reload)
+     */
+    public deop: DeOption;
+
+    /**
+     * Denly.deprecated
+     * The old object after the restart
+     */
+    private deprecated: DenlyHttp | null = null;
+
     constructor(options?: DeOption, http?: DenlyHttp) {
+
+        this.deop = { hostname: '0.0.0.0', port: 808, options: { debug: false } };
 
         if (http) {
             this.http = http;
         } else {
             if (options) {
+                this.deop = options;
                 this.http = new DenlyHttp(
                     options.hostname,
                     options.port,
@@ -95,6 +110,12 @@ export class Denly {
             } else {
                 this.http = new DenlyHttp('0.0.0.0', 808, { debug: false });
             }
+        }
+
+        Watcher.app = this;
+
+        if (this.deop.options?.debug) {
+            Watcher.listen();
         }
 
         Memory.loader();
@@ -194,7 +215,7 @@ export class Denly {
         // 服务器信息渲染
         let path = colorTab.Blue + "http://" + host + ':' + port + colorTab.Clean;
         EConsole.blank();
-        EConsole.info(`HTTP Server ${path} 已启动！`);
+        EConsole.info(`Denly Server ${path} 已启动！`);
         if (http.debug) {
             EConsole.warn("开启了 Debug 模式（仅用于开发环境）");
         }
@@ -209,6 +230,27 @@ export class Denly {
 
             });
         }
+    }
+
+    /**
+     * Denly.reload [func]
+     * restart the denly server 
+     */
+    public reload() {
+        this.http.serve.close();
+
+        this.deprecated = this.http;
+
+        setTimeout(() => {
+
+            this.http = new DenlyHttp(
+                this.deop.hostname,
+                this.deop.port,
+                this.deop.options
+            );
+
+            this.run();
+        }, 800);
     }
 
     /**

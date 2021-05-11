@@ -3,7 +3,6 @@
  * @author mrxiaozhuox <mrxzx@qq.com>
  */
 
-// import { ensureDirSync } from "https://deno.land/std@0.92.0/fs/dev.ts";
 
 import { Denly } from "../denly.ts";
 import { EConsole } from "../../support/console.ts"

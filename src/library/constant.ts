@@ -12,4 +12,4 @@ export const _dirname = (() => {
  * const: _version
  * Get Denly framework version
  */
-export const _version = "V0.2";
+export const _version = "V0.21";
