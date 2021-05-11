@@ -1,4 +1,4 @@
-## Web Framework for Deno
+## Denly web development framework
 
 ### Functions
 
@@ -56,6 +56,7 @@ router.fallback(404,() => {
 
 ```typescript
 let req = app.request;
+
 router.get("/",() => {
     return "Hello " + req.args("name") + "!";
 });
@@ -81,19 +82,20 @@ deno run --allow-run https://deno.land/x/denly@V0.21/debug.ts ./mod.ts
 import { Memory } from "https://deno.land/x/denly@V0.21/mod.ts";
 
 Memory.set("foo","bar");  // the data will save in the memory.
+
 console.log(Memory.get("foo")); // from memory to get the data.
+
 Memory.delete("foo"); // delete this data.
+
 Memory.persistenceAll(); // save all data to the file. (autoexec)
+
 Memory.clean(); // clean all data (include file data)
+
 Memory.group('session',false); // change group (second parameter can close file-cahce)
 ```
 
 
 
-### Jekyll Themes
+### Maintainers
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/mrxiaozhuox/Denly/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+* Originator: mrxiaozhuox \<mrxzx@qq.com\>
