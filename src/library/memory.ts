@@ -326,7 +326,7 @@ export class EMemory {
         let memorys = this.memorys;
 
         if (http?.debug) {
-            EConsole.debug("{ Memory } 全局持久化处理中...")
+            EConsole.debug("{ Memory } 全局持久化处理中...");
         }
 
         for (const [name, group] of memorys.entries()) {
@@ -337,7 +337,7 @@ export class EMemory {
             for (const [symbol, memory] of group.memorys) {
 
                 // 持久化是否支持
-                if (!memory.persistence || !memory.persistence.usable) { continue; } 4
+                if (!memory.persistence || !memory.persistence.usable) { continue; }
 
                 const hash = createHash("md5");
                 hash.update(this.thisGroup.toString() + "@" + symbol);

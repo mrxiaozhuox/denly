@@ -91,10 +91,8 @@ Memory.persistenceAll(); // save all data to the file. (autoexec)
 
 Memory.clean(); // clean all data (include file data)
 
-Memory.group('session',false); // change group (second parameter can close file-cahce)
+Memory.group('Session',false); // change group (second parameter can close file-cahce)
 ```
-
-
 
 ### Maintainers
 

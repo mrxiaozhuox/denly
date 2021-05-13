@@ -5,7 +5,8 @@
  * Get the root directory
  */
 export const _dirname = (() => {
-    return (Deno.mainModule).substring(0, Deno.mainModule.lastIndexOf("/") + 1).substr(8);
+    // return (Deno.mainModule).substring(0, Deno.mainModule.lastIndexOf("/") + 1).substr(8);
+    return Deno.cwd();
 })();
 
 /**

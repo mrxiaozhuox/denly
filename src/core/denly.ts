@@ -25,6 +25,7 @@ import { RouteController, Router } from '../core/router.ts';
 import { Memory } from "../library/memory.ts";
 
 import { _dirname, _version, Watcher } from "../mod.ts";
+import { DCtrlManager, CtrlManager } from "../library/controller.ts";
 
 
 export interface DeOption {
@@ -42,10 +43,6 @@ interface DeConfig {
     },
     memory: {
         interval: number
-    },
-    controller: {
-        usable: boolean,
-        path: string
     }
 }
 
@@ -62,10 +59,6 @@ export class Denly {
         },
         memory: {
             interval: 360 * 1000
-        },
-        controller: {
-            usable: false,
-            path: ""
         }
     };
 
@@ -75,6 +68,12 @@ export class Denly {
      */
     public route = Router;
 
+    /**
+     * Denly.controller [var]
+     * controller reference
+     */
+    public controller: DCtrlManager = CtrlManager;
+    
     /**
      * Denly.http [var]
      * http object
@@ -92,7 +91,7 @@ export class Denly {
      * request objectt
      */
     public request: DRequest = Request;
-    
+
     /**
      * Denly.response
      * response objectt
