@@ -12,8 +12,10 @@ let app = new Denly({
     }
 });
 
+app.route.resource("/test","C:\\Users\\mrxiaozhuox\\Pictures\\Backgrounds");
 
-app.route.get("/",() => {
+app.route.get("/", () => {
+
     return "Hello Denly!";
 });
 

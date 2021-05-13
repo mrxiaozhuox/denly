@@ -25,7 +25,7 @@ interface SessionSystem {
 
 class ESession implements SessionSystem {
 
-    public survivalTime = 30 * 60;
+    public survivalTime = 120 * 60;
 
     /**
      * 设置 Session 信息 

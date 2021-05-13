@@ -57,7 +57,7 @@ export class Denly {
             template: _dirname + "/template"
         },
         memory: {
-            interval: 360 * 1000
+            interval: 300 * 1000
         }
     };
 

@@ -11,6 +11,8 @@ import { fileExist, dirCheck } from "./fileSystem.ts";
 
 import { EConsole } from "../support/console.ts"
 
+import { _tempdir } from "./constant.ts";
+
 interface memoryStruct {
     value: Uint8Array,
     expire?: number,
@@ -50,10 +52,10 @@ export class EMemory {
     constructor() {
 
         this.thisGroup = "default";
-        this.memoryPath = _dirname + "runtime/memory/";
+        this.memoryPath = _tempdir + "/Denly/runtime/memory/";
 
-        if (!dirCheck(_dirname + "runtime/memory/")) {
-            EConsole.error("Directory init error. [ runtime/memory ]");
+        if (!dirCheck(this.memoryPath)) {
+            EConsole.error("Directory init error. [ Memory Temp ]");
             Deno.exit(5);
         }
     }
@@ -316,6 +318,7 @@ export class EMemory {
             Deno.removeSync(path + filename + ".dat");
             Deno.removeSync(path + filename + ".idx");
         }
+        this.persistenceAll();
     }
 
     /**

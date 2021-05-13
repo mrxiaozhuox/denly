@@ -1,6 +1,6 @@
 import { pathParser } from "./denly.ts";
-
-import { DRequest, DResponse } from "./server/http.ts";
+import { dirExist, fileExist } from "../library/fileSystem.ts";
+import { _separator } from "../library/constant.ts"
 import { Request, Response } from "./server/http.ts";
 
 /**
@@ -25,6 +25,9 @@ let _errors: Map<number, ErrorContrl> = new Map();
 // RegExp 信息
 let _reginfo: Map<string, RegExp> = new Map();
 
+// Resource Information
+let _resource: Map<string, string> = new Map();
+
 /**
  * RouteManager [obj]
  * Route Manager
@@ -32,8 +35,11 @@ let _reginfo: Map<string, RegExp> = new Map();
 class RouteManager {
 
     /**
-     * RouteManager.rule [func]
-     * register rule
+     * @name rule
+     * @param {string} path 
+     * @param {Controller} controller 
+     * @param {ruleOption} options 
+     * @returns {RouteManager} RouteManager
      */
     public rule(path: string, controller: Controller, options?: ruleOption): RouteManager {
 
@@ -49,8 +55,10 @@ class RouteManager {
     }
 
     /**
-     * RouteManager.regex [func]
-     * register regex
+     * @name regex
+     * @param {string} sign 
+     * @param {RegExp} regex 
+     * @returns {RouteManager} RouteManager
      */
     public regex(sign: string, regex: RegExp): RouteManager {
         _reginfo.set(sign, regex);
@@ -58,8 +66,10 @@ class RouteManager {
     }
 
     /**
-     * RouteManager.get [func]
-     * register rule
+     * @name get
+     * @param {string} path
+     * @param {Controller} controller 
+     * @returns {RouteManager} RouteManager
      */
     public get(path: string, controller: Controller): RouteManager {
         return this.rule(path, controller, {
@@ -67,9 +77,12 @@ class RouteManager {
         });
     }
 
+
     /**
-     * RouteManager.post [func]
-     * register rule
+     * @name post
+     * @param {string} path
+     * @param {Controller} controller 
+     * @returns {RouteManager} RouteManager
      */
     public post(path: string, controller: Controller): RouteManager {
         return this.rule(path, controller, {
@@ -77,9 +90,12 @@ class RouteManager {
         });
     }
 
+
     /**
-     * RouteManager.fallback [func]
-     * bind error controller
+     * @name fallback
+     * @param {number | Array<number>} code 
+     * @param {ErrorContrl} controller 
+     * @returns {RouteManager} RouteManager
      */
     public fallback(code: number | Array<number>, controller: ErrorContrl): RouteManager {
 
@@ -93,6 +109,21 @@ class RouteManager {
 
         return this;
     }
+
+    /**
+     * @name resource
+     * @param {string} url
+     * @param {string} path
+     * 
+     * @returns {RouteManager} RouteManager
+     */
+    public resource(url: string, path: string): RouteManager {
+
+        _resource.set(url, path);
+
+        return this;
+    }
+
 
 }
 
@@ -179,6 +210,83 @@ export class RouteController {
             };
 
         } else {
+
+            // check the resource list
+            let isres: string = "";
+
+            _resource.forEach((path, url) => {
+
+                let esc: Array<string> = pathParser(url);
+                let temp: string = path + _separator;
+                let flag: boolean = true;
+
+                for (const index in sections) {
+                    if (sections[index] == esc[index]) {
+                        continue;
+                    }
+
+                    if (dirExist(temp + sections[index] + _separator)) {
+                        temp += sections[index] + _separator;
+                    } else if (fileExist(temp + sections[index])) {
+                        temp += sections[index];
+                    } else {
+                        flag = false;
+                        break;
+                    }
+                }
+
+                if (flag && fileExist(temp)) {
+                    isres = temp;
+                }
+            });
+
+            if (isres != "") {
+                return {
+                    route: (path: string) => {
+                        try {
+                            if (fileExist(path)) {
+
+                                let tab: { [key: string]: string } = {
+                                    ico: "image/jpg; charset=utf-8",
+                                    jpg: "image/jpg; charset=utf-8",
+                                    png: "image/jpg; charset=utf-8",
+                                    jpeg: "image/jpg; charset=utf-8",
+                                    js: "text/javascript; charset=utf-8",
+                                    css: "text/css; charset=utf-8",
+                                    json: "application/json; charset=utf-8",
+                                    zip: "application/zip; charset=utf-8",
+                                    rar: "application/zip; charset=utf-8",
+                                    pdf: "application/pdf; charset=utf-8",
+                                    text: "text/plain; charset=utf-8",
+                                    html: "text/html; charset=utf-8"
+                                }
+
+                                let suffix = path.substring(path.lastIndexOf(".") + 1);
+
+                                if (suffix in tab) {
+                                    Response.header("Content-type", tab[suffix]);
+                                } else {
+                                    Response.header("Content-type", "text/html; charset=utf-8");
+                                }
+                                const decoder = new TextDecoder();
+
+                                if(tab[suffix] != "image/jpg; charset=utf-8"){
+                                    return decoder.decode(Deno.readFileSync(path));
+                                }else{
+                                    return Deno.readFileSync(path);
+                                }
+                            } else {
+                                Response.abort(404);
+                            }
+                        } catch (error) {
+                            return Response.abort(404);
+                        }
+                    },
+                    other: { method: "ANY" },
+                    parms: [isres]
+                };
+            }
+
             return null;
         }
     }
@@ -218,6 +326,6 @@ export class RouteController {
      * 获取路由数据信息
      */
     public static list() {
-        return [_routers, _optinfo, _errors];
+        return [_routers, _optinfo, _errors, _resource];
     }
 }
