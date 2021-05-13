@@ -25,7 +25,6 @@ import { RouteController, Router } from '../core/router.ts';
 import { Memory } from "../library/memory.ts";
 
 import { _dirname, _version, Watcher } from "../mod.ts";
-import { DCtrlManager, CtrlManager } from "../library/controller.ts";
 
 
 export interface DeOption {
@@ -68,12 +67,6 @@ export class Denly {
      */
     public route = Router;
 
-    /**
-     * Denly.controller [var]
-     * controller reference
-     */
-    public controller: DCtrlManager = CtrlManager;
-    
     /**
      * Denly.http [var]
      * http object

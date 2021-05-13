@@ -4,8 +4,6 @@
 
 import { Denly } from "./src/mod.ts";
 
-import { } from "./src/library/controller.ts"
-
 let app = new Denly({
     hostname: "127.0.0.1",
     port: 808,
@@ -14,6 +12,9 @@ let app = new Denly({
     }
 });
 
-app.route.get("/", app.controller.load('Main.index'));
+
+app.route.get("/",() => {
+    return "Hello Denly!";
+});
 
 app.run();

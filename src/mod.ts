@@ -50,6 +50,3 @@ export { Watcher } from "./support/watcher.ts";
 
 /** Request & Response */
 export { Request, Response, DRequest, DResponse } from "./core/server/http.ts"
-
-/** Controller Manager */
-export { Controller, CtrlManager } from "./library/controller.ts";
