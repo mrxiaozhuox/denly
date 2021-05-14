@@ -2,7 +2,7 @@
  * a simple example for denly framework
  */
 
-import { Denly, Event } from "./src/mod.ts";
+import { Denly } from "./src/mod.ts";
 
 let app = new Denly({
     hostname: "127.0.0.1",

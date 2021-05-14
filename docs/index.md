@@ -7,6 +7,7 @@
 * Response Method ( Redirect, Abort, Json )
 * Memory System ( memory cache )
 * Session & Cookie Manager ( realized in memory system )
+* Event Manager ( trigger and timer )
 * Hot-Loading ( automatic restart after editing the file )
 
 ### Some Examples
