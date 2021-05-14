@@ -17,7 +17,7 @@
 You just need import the file from github (or gitee)
 
 ```typescript
-import { Denly } from "https://deno.land/x/denly@V0.22/mod.ts";
+import { Denly } from "https://deno.land/x/denly@V0.23/mod.ts";
 
 let app = new Denly({ hostname: "127.0.0.1",port: 808 });
 
@@ -35,7 +35,7 @@ It's easy to use, you don't need to download other file, just import the package
 if you want the server automatic restart after the file edited, then you can use **hot-loading**.
 
 ```shell
-deno run --allow-run https://deno.land/x/denly@V0.22/debug.ts ./mod.ts
+deno run --allow-run https://deno.land/x/denly@V0.23/debug.ts ./mod.ts
 ```
 
 ## Developer
