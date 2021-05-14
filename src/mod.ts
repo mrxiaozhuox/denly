@@ -50,3 +50,6 @@ export { Watcher } from "./support/watcher.ts";
 
 /** Request & Response */
 export { Request, Response, DRequest, DResponse } from "./core/server/http.ts"
+
+/** Event Manager */
+export { DEvent, Event } from "./support/event.ts";

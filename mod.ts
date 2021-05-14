@@ -2,7 +2,7 @@
  * a simple example for denly framework
  */
 
-import { Denly } from "./src/mod.ts";
+import { Denly, Event } from "./src/mod.ts";
 
 let app = new Denly({
     hostname: "127.0.0.1",
@@ -13,7 +13,6 @@ let app = new Denly({
 });
 
 app.route.get("/", () => {
-
     return "Hello Denly!";
 });
 
