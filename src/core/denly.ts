@@ -48,8 +48,7 @@ interface DeConfig {
 export class Denly {
 
     /**
-     * Denly.config [var]
-     * application configs
+     * @description application config
      */
     public config: DeConfig = {
         storage: {
@@ -62,38 +61,36 @@ export class Denly {
     };
 
     /**
-     * Denly.route [var]
-     * router reference
+     * @description router shortcut
      */
     public route = Router;
 
+
     /**
-     * Denly.http [var]
-     * http object
+     * @description http-server object
      */
     private http: DenlyHttp;
 
     /**
-     * Denly.deop
-     * denly server options (use to reload)
+     * @description Denly server options (use to reload)
      */
     public deop: DeOption;
 
+
     /**
-     * Denly.request
-     * request objectt
+     * @description request object
      */
     public request: DRequest = Request;
 
+
     /**
-     * Denly.response
-     * response objectt
+     * @description response object
      */
     public response: DResponse = Response;
 
+
     /**
-     * Denly.deprecated
-     * The old object after the restart
+     * @description The old object after the restart
      */
     private deprecated: DenlyHttp | null = null;
 

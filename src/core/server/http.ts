@@ -149,7 +149,7 @@ export class DResponse {
      * 返回 Json 代码
      */
     public json(data: object) {
-        header.set("Content-Type", "application/json");
+        header.set("Content-Type", "application/json; charset=utf-8");
         return JSON.stringify(data);
     }
 
