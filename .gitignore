@@ -1,3 +1,4 @@
 /.vscode
-/runtime/*
-/application/*
+/.vim
+/runtime
+/application

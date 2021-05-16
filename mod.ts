@@ -4,7 +4,7 @@
 
 import { Denly } from "./src/mod.ts";
 
-let app = new Denly({
+const app = new Denly({
     hostname: "127.0.0.1",
     port: 808,
     options: {
