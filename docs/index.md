@@ -2,13 +2,13 @@
 
 ### Functions
 
-* Route System
-* Args & Form Data
-* Response Method ( Redirect, Abort, Json )
-* Memory System ( memory cache )
-* Session & Cookie Manager ( realized in memory system )
-* Event Manager ( trigger and timer )
-* Hot-Loading ( automatic restart after editing the file )
+- Route System
+- Args & Form Data
+- Response Method ( Redirect, Abort, Json )
+- Memory System ( memory cache )
+- Session & Cookie Manager ( realized in memory system )
+- Event Manager ( trigger and timer )
+- Hot-Loading ( automatic restart after editing the file )
 
 ### Some Examples
 
@@ -19,10 +19,10 @@ Here are some examples.
 ```typescript
 import { Denly } from "https://deno.land/x/denly@V0.23/mod.ts";
 
-let app = new Denly({ hostname: "127.0.0.1",port: 808 });
+let app = new Denly({ hostname: "127.0.0.1", port: 808 });
 
 app.route.get("/", () => {
-    return "Hello Denly!";
+  return "Hello Denly!";
 });
 
 app.run();
@@ -34,22 +34,24 @@ app.run();
 let router = app.route;
 
 // Basic router register:
-router.rule("/",() => { return "index page"; });
+router.rule("/", () => {
+  return "index page";
+});
 
 // dynamic path register:
-router.rule("/:letter",(name: string) => {
-    return `Hello ${name}!`;
+router.rule("/:letter", (name: string) => {
+  return `Hello ${name}!`;
 });
 
 // regex sign register:
 router.regex("number", /^[0-9]*$/g); // use for dynamic path register.
 
 // fallback register:
-router.fallback(404,() => {
-    return {
-        header: new Headers(),
-        body: "<h1>404 Not Found</h1>"
-    };
+router.fallback(404, () => {
+  return {
+    header: new Headers(),
+    body: "<h1>404 Not Found</h1>",
+  };
 });
 ```
 
@@ -58,13 +60,13 @@ router.fallback(404,() => {
 ```typescript
 let req = app.request;
 
-router.get("/",() => {
-    return "Hello " + req.args("name") + "!";
+router.get("/", () => {
+  return "Hello " + req.args("name") + "!";
 });
 // 127.0.0.1:808?name=Sam - Hello Sam!
 
-router.post("/info",() => {
-   return "Form Data: " + req.form("data"); 
+router.post("/info", () => {
+  return "Form Data: " + req.form("data");
 });
 // Use post to request '/info'
 ```
@@ -82,7 +84,7 @@ deno run --allow-run https://deno.land/x/denly@V0.23/debug.ts ./mod.ts
 ```typescript
 import { Memory } from "https://deno.land/x/denly@V0.23/mod.ts";
 
-Memory.set("foo","bar");  // the data will save in the memory.
+Memory.set("foo", "bar"); // the data will save in the memory.
 
 console.log(Memory.get("foo")); // from memory to get the data.
 
@@ -92,9 +94,9 @@ Memory.persistenceAll(); // save all data to the file. (autoexec)
 
 Memory.clean(); // clean all data (include file data)
 
-Memory.group('Session',false); // change group (second parameter can close file-cahce)
+Memory.group("Session", false); // change group (second parameter can close file-cahce)
 ```
 
 ### Maintainers
 
-* Originator: mrxiaozhuox \<mrxzx@qq.com\>
+- Originator: mrxiaozhuox \<mrxzx@qq.com\>
