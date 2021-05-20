@@ -4,196 +4,196 @@ import { RequestData } from "./body.ts";
 import { fileExist } from "../../library/fileSystem.ts";
 
 interface StartOption {
-  debug?: boolean;
+    debug?: boolean;
 }
 
 interface AddrInfo {
-  hostname: string;
-  port: number;
+    hostname: string;
+    port: number;
 }
 
 export interface HttpState {
-  code: number;
+    code: number;
 }
 
 export { Server };
 
 export class DenlyHttp {
-  public addr: AddrInfo = { hostname: "127.0.0.1", port: 808 };
+    public addr: AddrInfo = { hostname: "127.0.0.1", port: 808 };
 
-  public debug = false;
-  public serve: Server;
+    public debug = false;
+    public serve: Server;
 
-  /**
-     *
-     */
-  constructor(
-    host: string,
-    port: number,
-    options?: StartOption,
-  ) {
-    this.addr["hostname"] = host;
-    this.addr["port"] = port;
+    /**
+       *
+       */
+    constructor(
+        host: string,
+        port: number,
+        options?: StartOption,
+    ) {
+        this.addr["hostname"] = host;
+        this.addr["port"] = port;
 
-    const server: Server = serve({
-      hostname: host,
-      port: port,
-    });
+        const server: Server = serve({
+            hostname: host,
+            port: port,
+        });
 
-    if (options !== undefined) {
-      // 存在特殊配置
-      if (options.debug !== undefined) {
-        this.debug = options.debug;
-      } else {
-        this.debug = false;
-      }
+        if (options !== undefined) {
+            // 存在特殊配置
+            if (options.debug !== undefined) {
+                this.debug = options.debug;
+            } else {
+                this.debug = false;
+            }
+        }
+
+        this.serve = server;
     }
-
-    this.serve = server;
-  }
 }
 
 const header = new Headers();
 
 interface ReqInfos {
-  _args: Array<RequestData>;
-  _form: Array<RequestData>;
-  redirect: string;
-  error: number;
+    _args: Array<RequestData>;
+    _form: Array<RequestData>;
+    redirect: string;
+    error: number;
 }
 
 const reqinfo: ReqInfos = {
-  _args: [],
-  _form: [],
-  redirect: "#", // # 代表不进行重定向（默认）
-  error: 200,
+    _args: [],
+    _form: [],
+    redirect: "#", // # 代表不进行重定向（默认）
+    error: 200,
 };
 
 export class DRequest {
-  /**
-     * Get 参数获取
-     * PS: $_GET
-     */
-  public args(key: string) {
-    let info: RequestData | undefined;
-    try {
-      reqinfo._args.forEach((element) => {
-        if (element.key == key) {
-          info = element;
-          throw new Error(); // 跳出循环
+    /**
+       * Get 参数获取
+       * PS: $_GET
+       */
+    public args(key: string) {
+        let info: RequestData | undefined;
+        try {
+            reqinfo._args.forEach((element) => {
+                if (element.key == key) {
+                    info = element;
+                    throw new Error(); // 跳出循环
+                }
+            });
+        } catch (error) {
+            error;
         }
-      });
-    } catch (error) {
-      error;
-    }
 
-    if (info) {
-      return decodeURI(info.value);
-    }
-    return null;
-  }
-
-  /**
-     * Post 参数获取
-     * PS: $_POST
-     */
-  public form(key: string) {
-    let info: RequestData | undefined;
-    try {
-      reqinfo._form.forEach((element) => {
-        if (element.key == key) {
-          info = element;
-          throw new Error(); // 跳出循环
+        if (info) {
+            return decodeURI(info.value);
         }
-      });
-    } catch (error) {
-      error;
+        return null;
     }
 
-    if (info) {
-      return info.value;
+    /**
+       * Post 参数获取
+       * PS: $_POST
+       */
+    public form(key: string) {
+        let info: RequestData | undefined;
+        try {
+            reqinfo._form.forEach((element) => {
+                if (element.key == key) {
+                    info = element;
+                    throw new Error(); // 跳出循环
+                }
+            });
+        } catch (error) {
+            error;
+        }
+
+        if (info) {
+            return info.value;
+        }
+        return null;
     }
-    return null;
-  }
 }
 
 export let Request = new DRequest();
 
 export class DResponse {
-  /**
-     * 重定向设置
-     */
-  public redirect(url: string, cond = true) {
-    if (cond) {
-      reqinfo.redirect = url;
-    } else {
-      reqinfo.redirect = "#";
+    /**
+       * 重定向设置
+       */
+    public redirect(url: string, cond = true) {
+        if (cond) {
+            reqinfo.redirect = url;
+        } else {
+            reqinfo.redirect = "#";
+        }
     }
-  }
 
-  /**
-     * 设置 Header
-     */
-  public header(key: string, value: string, append?: boolean) {
-    if (append) {
-      header.append(key, value);
-    } else {
-      header.set(key, value);
+    /**
+       * 设置 Header
+       */
+    public header(key: string, value: string, append?: boolean) {
+        if (append) {
+            header.append(key, value);
+        } else {
+            header.set(key, value);
+        }
     }
-  }
 
-  /**
-     * 返回 Json 代码
-     */
-  public json(data: object) {
-    header.set("Content-Type", "application/json; charset=utf-8");
-    return JSON.stringify(data);
-  }
-
-  /**
-     * 返回 文件内容
-     */
-  public file(file: string) {
-    if (typeof file == "string") {
-      if (fileExist(file)) {
-        return Deno.readFileSync(file);
-      } else {
-        throw new Error("file not found");
-      }
+    /**
+       * 返回 Json 代码
+       */
+    public json(data: object) {
+        header.set("Content-Type", "application/json; charset=utf-8");
+        return JSON.stringify(data);
     }
-    return new Uint8Array();
-  }
 
-  public abort(code = 404) {
-    reqinfo.error = code;
-  }
+    /**
+       * 返回 文件内容
+       */
+    public file(file: string) {
+        if (typeof file == "string") {
+            if (fileExist(file)) {
+                return Deno.readFileSync(file);
+            } else {
+                throw new Error("file not found");
+            }
+        }
+        return new Uint8Array();
+    }
+
+    public abort(code = 404) {
+        reqinfo.error = code;
+    }
 }
 
 export const Response = new DResponse();
 
 export function httpInit(
-  data: { args: Array<RequestData>; form: Array<RequestData> },
+    data: { args: Array<RequestData>; form: Array<RequestData> },
 ) {
-  reqinfo._args = data.args;
-  reqinfo._form = data.form;
+    reqinfo._args = data.args;
+    reqinfo._form = data.form;
 }
 
 interface httpResponse {
-  header: Headers;
-  redirect: string;
-  error: number;
+    header: Headers;
+    redirect: string;
+    error: number;
 }
 
 export function httpResp(): httpResponse {
-  const redirect = reqinfo.redirect;
-  const error = reqinfo.error;
+    const redirect = reqinfo.redirect;
+    const error = reqinfo.error;
 
-  reqinfo.redirect = "#";
-  reqinfo.error = 200;
+    reqinfo.redirect = "#";
+    reqinfo.error = 200;
 
-  return {
-    header: header,
-    redirect: redirect,
-    error: error,
-  };
+    return {
+        header: header,
+        redirect: redirect,
+        error: error,
+    };
 }

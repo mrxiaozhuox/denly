@@ -18,26 +18,26 @@ import { EConsole } from "./mod.ts";
 import { fileExist } from "./library/fileSystem.ts";
 
 if (import.meta.main) {
-  let target = "";
+    let target = "";
 
-  if (Deno.args.length > 0) {
-    target = Deno.args[0];
-  }
-
-  while (true) {
-    if (!fileExist(target)) {
-      EConsole.error(`File: '${target}' is not found.`);
-      break;
+    if (Deno.args.length > 0) {
+        target = Deno.args[0];
     }
 
-    const p = Deno.run({
-      cmd: ["Deno", "run", "-A", target, "-CHILD"],
-      stderr: "inherit",
-      stdout: "inherit",
-    });
+    while (true) {
+        if (!fileExist(target)) {
+            EConsole.error(`File: '${target}' is not found.`);
+            break;
+        }
 
-    await p.status();
-  }
+        const p = Deno.run({
+            cmd: ["Deno", "run", "-A", target, "-CHILD"],
+            stderr: "inherit",
+            stdout: "inherit",
+        });
+
+        await p.status();
+    }
 } else {
-  EConsole.warn("Please use 'debug.ts' as the main program.");
+    EConsole.warn("Please use 'debug.ts' as the main program.");
 }
