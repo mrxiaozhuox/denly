@@ -4,7 +4,8 @@
  * @link https://denly.mrxzx.info/
  */
 
-import { Denly } from "./src/mod.ts";
+import { Denly, Memory } from "./src/mod.ts";
+
 
 const app = new Denly({
     hostname: "127.0.0.1",
@@ -16,10 +17,17 @@ const app = new Denly({
 
 
 app.route.get("/", async () => {
-    return new Promise((resolve, reject) => {
-        resolve("<h1>Hello World</h1>");
-    });
+    return "Hello World";
 });
 
-// Start the Denly HTTP Service
+
+/**
+ * Have a good habit.
+ * Save Memory until the program ends.
+ */
+window.onunload = function () {
+    Memory.persistenceAll();
+}
+
+// Start the Denly HTTP service
 app.run();
