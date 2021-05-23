@@ -179,7 +179,8 @@ export class Denly {
             if (typeof target.route == "function") {
                 try {
                     // exec controller
-                    context = target.route(...target.parms);
+                    context = await target.route(...target.parms);
+
                 } catch (error) {
                     if (typeof error == "number") {
                         status = error;

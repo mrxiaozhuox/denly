@@ -202,6 +202,7 @@ export class RouteController {
                 parms: parms,
             };
         } else {
+
             // check the resource list
             let isres = "";
 
@@ -230,11 +231,13 @@ export class RouteController {
                 }
             });
 
+            // Static resource request
             if (isres != "") {
                 return {
                     route: (path: string) => {
                         try {
                             if (fileExist(path)) {
+
                                 const tab: { [key: string]: string } = {
                                     ico: "image/jpg; charset=utf-8",
                                     jpg: "image/jpg; charset=utf-8",

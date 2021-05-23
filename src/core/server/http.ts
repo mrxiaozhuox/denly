@@ -120,6 +120,22 @@ export class DRequest {
 export let Request = new DRequest();
 
 export class DResponse {
+
+    private contentType: { [key: string]: string } = {
+        ico: "image/jpg; charset=utf-8",
+        jpg: "image/jpg; charset=utf-8",
+        png: "image/jpg; charset=utf-8",
+        jpeg: "image/jpg; charset=utf-8",
+        js: "text/javascript; charset=utf-8",
+        css: "text/css; charset=utf-8",
+        json: "application/json; charset=utf-8",
+        zip: "application/zip; charset=utf-8",
+        rar: "application/zip; charset=utf-8",
+        pdf: "application/pdf; charset=utf-8",
+        text: "text/plain; charset=utf-8",
+        html: "text/html; charset=utf-8",
+    };
+
     /**
        * 重定向设置
        */
@@ -153,9 +169,20 @@ export class DResponse {
     /**
        * 返回 文件内容
        */
-    public file(file: string) {
+    public file(file: string, contentType?: string) {
         if (typeof file == "string") {
             if (fileExist(file)) {
+
+                const suffix = file.split(".")[file.split(".").length - 1];
+
+                if (contentType) {
+                    this.header("Content-type", contentType);
+                } else {
+                    if (suffix in this.contentType) {
+                        this.header("Content-Type", this.contentType[suffix]);
+                    }
+                }
+
                 return Deno.readFileSync(file);
             } else {
                 throw new Error("file not found");

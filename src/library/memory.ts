@@ -289,10 +289,14 @@ export class EMemory {
             };
 
             // 读取 Memory 数据及其索引信息
-            data.dat = Deno.readFileSync(path + filename + ".dat");
-            data.idx = JSON.parse(
-                decoder.decode(Deno.readFileSync(path + filename + ".idx")),
-            );
+            try {
+                data.dat = Deno.readFileSync(path + filename + ".dat");
+                data.idx = JSON.parse(
+                    decoder.decode(Deno.readFileSync(path + filename + ".idx")),
+                );
+            } catch (err) {
+                continue;
+            }
 
             // 过期数据则不读取
             if (data.idx.expire <= new Date().getTime() && data.idx.expire != 0) {

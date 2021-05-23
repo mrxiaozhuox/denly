@@ -15,9 +15,7 @@ const app = new Denly({
 });
 
 
-app.route.get("/", () => {
-    return "Hello Denly!";
-});
+app.route.get("/", () => { });
 
 // Start the Denly HTTP Service
 app.run();
