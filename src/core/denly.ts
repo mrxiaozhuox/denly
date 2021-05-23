@@ -177,6 +177,14 @@ export class Denly {
 
         if (target) {
             if (typeof target.route == "function") {
+
+                // Default Header [Content-Type]
+                if (target.other?.method == "ANY" || target.other?.method == "GET") {
+                    this.response.header("Content-Type", "text/html;charset=utf-8");
+                } else {
+                    this.response.header("Content-Type", "application/x-www-form-urlencoded;charset=utf-8");
+                }
+
                 try {
                     // exec controller
                     context = await target.route(...target.parms);

@@ -15,7 +15,11 @@ const app = new Denly({
 });
 
 
-app.route.get("/", () => { });
+app.route.get("/", async () => {
+    return new Promise((resolve, reject) => {
+        resolve("<h1>Hello World</h1>");
+    });
+});
 
 // Start the Denly HTTP Service
 app.run();
