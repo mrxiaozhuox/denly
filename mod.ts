@@ -4,7 +4,7 @@
  * @link https://denly.mrxzx.info/
  */
 
-import { Denly, Event } from "./src/mod.ts";
+import { Denly } from "./src/mod.ts";
 
 const app = new Denly({
     hostname: "127.0.0.1",
@@ -21,10 +21,3 @@ app.route.get("/", () => {
 
 // Start the Denly HTTP Service
 app.run();
-
-
-Event.registerEvent("test", () => {
-    console.log("Hello");
-});
-
-console.log(Event.eventList());

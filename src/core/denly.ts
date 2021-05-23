@@ -233,7 +233,7 @@ export class Denly {
 
         // const server: Server = http.serve;
 
-        // 服务器信息渲染
+        // server information display
         const path = colorTab.Blue + "http://" + host + ":" + port + colorTab.Clean;
         EConsole.blank();
         EConsole.info(`Denly Server ${path} started！`);

@@ -323,7 +323,7 @@ export class EMemory {
         const memorys = this.memorys;
 
         if (http?.debug) {
-            EConsole.debug("{ Memory } 全局持久化处理中...");
+            EConsole.debug("{ Memory } Start to persistence...");
         }
 
         for (const [name, group] of memorys.entries()) {
@@ -352,7 +352,7 @@ export class EMemory {
                         JSON.stringify(info),
                     );
                 } catch {
-                    EConsole.error(`[${name + "." + symbol}] 持久化保存失败...`);
+                    EConsole.error(`[${name + "." + symbol}] Persistence failed...`);
                     break;
                 }
 
@@ -384,4 +384,9 @@ export class EMemory {
     }
 }
 
+/**
+ * The singleton pattern
+ * @public
+ * @var
+ */
 export const Memory = new EMemory();
