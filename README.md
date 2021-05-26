@@ -75,7 +75,7 @@ You can send different error status codes and customize how you handle them.
 app.route.fallback(404, () => {
     return {
         header: new Headers(), // A headers object
-        body: new TextEncoder().encode("<h1>404 Not Found</h1>"), // Uint8Array or string
+        body: new TextEncoder().encode("<h1>404 Not Found</h1>"),
     };
 });
 
@@ -97,6 +97,14 @@ app.route.get("/image",() => {
 ```
 
 The file function have second parameter can set **Content-Type**.
+
+### Static route
+
+```typescript
+app.route.resource("/static", "./public");
+```
+
+You can bind a static routes by passing the path to the local folder and the public alias to the **resource** function.
 
 ## Developer
 

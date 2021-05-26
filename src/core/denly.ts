@@ -25,7 +25,7 @@ import {
     httpInit,
     httpResp,
 } from "./server/http.ts";
-import { getDecoder, postDecoder, RequestData } from "./server/body.ts";
+import { getDecoder, postDecoder } from "./server/body.ts";
 
 // Denly Storage Manager
 import { bindCookie, loadCookie } from "./storage.ts";
@@ -154,8 +154,9 @@ export class Denly {
 
         const sections: Array<string> = pathParser(request.url); // 路径解析
 
-        let args: Array<RequestData> = [];
-        let form: Array<RequestData> = [];
+        let args: { [name: string]: string; } = {};
+        let form: { [name: string]: string } = {};
+        let file: { [name: string]: File } = {};
 
         let context: Uint8Array | Deno.Reader | string = "";
 
@@ -166,11 +167,14 @@ export class Denly {
             args = getDecoder(request.url);
         } else {
             const origin: Uint8Array = await readAll(request.body);
-            form = postDecoder(origin, request.headers);
+            let temp = postDecoder(origin, request.headers);
+
+            form = temp.body;
+            file = temp.files;
         }
 
         // Request 数据绑定（用于 Request 数据获取）
-        httpInit({ args, form });
+        httpInit({ args, form, file });
 
         // 路由解析器
         const target = RouteController.processer(sections, request.method);

@@ -1,5 +1,4 @@
 import { serve, Server } from "https://deno.land/std@0.92.0/http/server.ts";
-import { RequestData } from "./body.ts";
 // import { Memory } from "../../library/memory.ts";
 import { fileExist } from "../../library/fileSystem.ts";
 
@@ -56,15 +55,17 @@ export class DenlyHttp {
 const header = new Headers();
 
 interface ReqInfos {
-    _args: Array<RequestData>;
-    _form: Array<RequestData>;
+    _args: { [name: string]: string; };
+    _form: { [name: string]: string; };
+    _file: { [name: string]: File };
     redirect: string;
     error: number;
 }
 
 const reqinfo: ReqInfos = {
-    _args: [],
-    _form: [],
+    _args: {},
+    _form: {},
+    _file: {},
     redirect: "#", // # 代表不进行重定向（默认）
     error: 200,
 };
@@ -75,20 +76,8 @@ export class DRequest {
        * PS: $_GET
        */
     public args(key: string) {
-        let info: RequestData | undefined;
-        try {
-            reqinfo._args.forEach((element) => {
-                if (element.key == key) {
-                    info = element;
-                    throw new Error(); // 跳出循环
-                }
-            });
-        } catch (error) {
-            error;
-        }
-
-        if (info) {
-            return decodeURI(info.value);
+        if (key in reqinfo._args) {
+            return reqinfo._args[key];
         }
         return null;
     }
@@ -98,23 +87,24 @@ export class DRequest {
        * PS: $_POST
        */
     public form(key: string) {
-        let info: RequestData | undefined;
-        try {
-            reqinfo._form.forEach((element) => {
-                if (element.key == key) {
-                    info = element;
-                    throw new Error(); // 跳出循环
-                }
-            });
-        } catch (error) {
-            error;
-        }
-
-        if (info) {
-            return info.value;
+        if (key in reqinfo._form) {
+            return reqinfo._form[key];
         }
         return null;
     }
+
+    /**
+     * upload file
+     * @param key 
+     * @return file struct
+     */
+    public file(key: string) {
+        if (key in reqinfo._file) {
+            return reqinfo._file[key];
+        }
+        return null;
+    }
+
 }
 
 export let Request = new DRequest();
@@ -199,10 +189,15 @@ export class DResponse {
 export const Response = new DResponse();
 
 export function httpInit(
-    data: { args: Array<RequestData>; form: Array<RequestData> },
+    data: {
+        args: { [name: string]: string; };
+        form: { [name: string]: string; };
+        file: { [name: string]: File; };
+    },
 ) {
     reqinfo._args = data.args;
     reqinfo._form = data.form;
+    reqinfo._file = data.file;
 }
 
 interface httpResponse {

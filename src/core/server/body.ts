@@ -7,15 +7,8 @@ import { EConsole } from "../../support/console.ts";
 import { Memory } from "../../library/memory.ts";
 import { fileExist } from "../../library/fileSystem.ts";
 
-export interface RequestData {
-    key: string;
-    value: string;
-    other?: Map<string, string>;
-    type?: string;
-}
-
 export function getDecoder(url: string) {
-    const result: Array<RequestData> = [];
+    const result: { [name: string]: string; } = {};
 
     if (url.includes("?")) {
         const parm: string = url.split("?")[1];
@@ -23,7 +16,7 @@ export function getDecoder(url: string) {
 
         parms.forEach((data) => {
             const kv = data.split("=");
-            result.push({ key: kv[0], value: kv[1], type: "GET" });
+            result[kv[0]] = kv[1];
         });
     }
 
@@ -34,183 +27,103 @@ export function getDecoder(url: string) {
  * postDecoder post提交数据处理器
  * @param body
  * @param header
- * @returns {Array<RequestData>}
+ * @returns { body: { [name: string]: string; }; files: { [name: string]: File; }; }
  */
 export function postDecoder(
-    body: Uint8Array,
+    buffer: Uint8Array,
     header: Headers,
-): Array<RequestData> {
-    if (header.has("content-type")) {
-        const ctype = header.get("content-type");
+): { body: { [name: string]: string; }; files: { [name: string]: File; }; } {
 
-        if (!ctype) {
-            return [];
-        }
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder("utf-8");
 
-        const charset = ctype.match(/charset="([^]*)"/i);
-        const decoder = new TextDecoder(charset ? charset[1] : "utf-8");
 
-        if (/application\/x-www-form-urlencoded/i.test(ctype)) {
-            const data = decoder.decode(body);
-            const result: RequestData = { key: "", value: "" };
+    const rawBody = decoder.decode(buffer);
+    let body: { [name: string]: any; } = {};
 
-            // 转换数据为键值对
-            data.split("&").map((e) => {
-                const [k, v] = e.trim().split("=");
-                result.key = decodeURIComponent(k);
-                result.value = decodeURIComponent(v || "");
-            });
 
-            return [result];
-        }
+    const files: { [name: string]: File; } = (rawBody.match(/---(\n|\r|.)*?Content-Type.*(\n|\r)+(\n|\r|.)*?(?=((\n|\r)--|$))/g) || []).reduce((files: { [name: string]: File; }, fileString: string, i) => {
 
-        if (/multipart\/form-data; boundary=(.*)/gi.test(ctype)) {
-            const data: string = decoder.decode(body);
-            const bars = /boundary=(.*)/i.exec(ctype);
+        const fileName = /filename="(.*?)"/.exec(fileString)?.[1];
+        const fileType = /Content-Type: (.*)/.exec(fileString)?.[1]?.trim();
+        const name = /name="(.*?)"/.exec(fileString)?.[1];
 
-            if (!bars) return [];
+        if (!fileName || !name) return files;
 
-            const boundary: string = "--" + bars[1];
+        const uniqueString = fileString.match(/---(\n|\r|.)*?Content-Type.*(\n|\r)+(\n|\r|.)*?/g)?.[0];
 
-            let flag = 0;
+        if (!uniqueString) return files;
 
-            const result: Array<RequestData> = [];
+        const uniqueStringEncoded = encoder.encode(uniqueString);
+        const endSequence = encoder.encode("----");
 
-            let temp: RequestData = { key: "", value: "", other: new Map() };
+        let start = -1;
+        let end = buffer.length;
+        for (let i = 0; i < buffer.length; i++) {
 
-            data.trim().split("\n").forEach(function (v) {
-                // Boundary skip
-                if (v.trim() == boundary || v.trim() == boundary + "--") {
-                    flag = 0;
+            if (start === -1) {
 
-                    temp.value = temp.value.substring(0, temp.value.length - 2);
-                    result.push(temp);
+                let matchedUniqueString = true;
+                let uniqueStringEncodedIndex = 0;
 
-                    temp = { key: "", value: "", other: new Map() };
-
-                    return;
-                }
-
-                if (flag == 1) {
-                    // 进入 flag 即代表本行内容为文本信息。
-
-                    if (v != "\r") {
-                        v = v.replace("\r", "");
-                        temp.value += v + "\r\n";
+                for (let j = i; j < i + uniqueStringEncoded.length; j++) {
+                    if (buffer[j] !== uniqueStringEncoded[uniqueStringEncodedIndex]) {
+                        matchedUniqueString = false;
+                        break;
                     }
-                } else if (flag == 2) {
-                    // 当类型为文件时，则从第二行再开始计算内容
-                    flag--;
-                    return;
+                    uniqueStringEncodedIndex++;
                 }
 
-                // 空行自动跳过
-                if (v.trim() == "") {
-                    return;
+                if (matchedUniqueString) {
+                    i = start = i + uniqueStringEncoded.length;
                 }
-
-                const reg = /Content-Disposition\: form-data; name\=\"(.*?)\"/i;
-
-                // 识别基础数据结构
-                if (reg.test(v)) {
-                    // 是否为文件上传
-                    let file = "";
-
-                    const bars = reg.exec(v);
-
-                    if (!bars) {
-                        return body;
-                    }
-
-                    temp.key = bars[1];
-
-                    // 文件系统读取
-                    const filreg = /filename=\"(.*)\"/i;
-                    if (filreg.test(v)) {
-                        file = filreg.exec(v)?.[1] || "";
-                        flag = 1;
-
-                        temp.type = "FILE";
-                        temp.other?.set("filename", file);
-                    }
-
-                    flag += 1;
-                }
-            });
-
-            // 删除为空的数据项
-            result.forEach((test, index) => {
-                if (test.key == "" || test.value == "") {
-                    result.splice(index, 1);
-                }
-            });
-
-            return result;
-        }
-
-        // Json 数据
-        if (ctype && /application\/json/i.test(ctype)) {
-            const result: Array<RequestData> = [];
-            const ctt = decoder.decode(body);
-
-            try {
-                const temp = JSON.parse(ctt);
-
-                for (const [key, value] of Object.entries(temp)) {
-                    if (typeof value == "string") {
-                        result.push({ key: key, value: value, other: new Map() });
-                    }
-                }
-            } catch (error) {
-                error;
+                continue;
             }
 
-            return result;
+            let matchedEndSequence = true;
+            let endSequenceIndex = 0;
+
+            for (let j = i; j < i + endSequence.length; j++) {
+                if (buffer[j] !== endSequence[endSequenceIndex]) {
+                    matchedEndSequence = false;
+                    break;
+                }
+                endSequenceIndex++;
+            }
+
+            if (matchedEndSequence) {
+                end = i;
+                break;
+            }
+
         }
 
-        // get normal text
-        if (ctype && ctype.includes("text")) {
-            const text = decoder.decode(body);
-            return [{ key: "Text", value: text }];
-        }
-    }
+        if (start === -1) return files;
 
-    return [];
-}
+        const fileBuffer = buffer.subarray(start, end);
+        const file = new File([fileBuffer], fileName, { type: fileType });
 
-/**
- * 上传文件缓存
- * 请勿随意手动调用
- */
-export function uploadFileTemp(data: RequestData): string {
-    let path = "";
+        return { [name]: file, ...files };
+    }, {});
+
+
     try {
-        path = Deno.makeTempFileSync({ prefix: "denly-upload-", suffix: ".temp" });
-        const out = new TextEncoder().encode(data.value);
-        Deno.writeFileSync(path, out);
+        body = JSON.parse(rawBody);
+    } catch (error) {
+        if (rawBody.includes(`name="`)) {
+            body = (rawBody.match(/name="(.*?)"(\s|\n|\r)*(.*)(\s|\n|\r)*---/gm) || [])
+                .reduce((fields: {}, field: string): { [name: string]: string; } => {
+                    if (!/name="(.*?)"/.exec(field)?.[1]) return fields;
 
-        Memory.group("uploadFile");
-        const oldInfo = Memory.get(data.key);
-
-        if (oldInfo) {
-            const decoder = new TextDecoder();
-
-            const oldFile = JSON.parse(decoder.decode(oldInfo));
-            if (fileExist(oldFile.file)) {
-                Deno.remove(oldFile.file);
-            }
+                    return {
+                        ...fields,
+                        [/name="(.*?)"/.exec(field)?.[1] || ""]: field.match(/(.*?)(?=(\s|\n|\r)*---)/)?.[0]
+                    }
+                }, {});
+        } else {
+            body = Object.fromEntries(new URLSearchParams(rawBody));
         }
-
-        Memory.set(
-            data.key,
-            JSON.stringify({
-                file: path,
-                name: data.other?.get("filename"),
-            }),
-        );
-    } catch (_) {
-        EConsole.error("upload file temp error.");
     }
 
-    return path;
+    return { body, files };
 }
