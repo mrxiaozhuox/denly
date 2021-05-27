@@ -166,6 +166,7 @@ export class Denly {
         if (request.method == "GET") {
             args = getDecoder(request.url);
         } else {
+            args = getDecoder(request.url);
             const origin: Uint8Array = await readAll(request.body);
             let temp = postDecoder(origin, request.headers);
 

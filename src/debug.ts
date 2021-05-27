@@ -31,7 +31,7 @@ if (import.meta.main) {
         }
 
         const p = Deno.run({
-            cmd: ["Deno", "run", "-A", target, "-CHILD"],
+            cmd: ["Deno", "run", "-A", target, "-HOTLOADING"],
             stderr: "inherit",
             stdout: "inherit",
         });

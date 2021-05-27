@@ -1,6 +1,23 @@
-# Denly Framework
+<p align="center">
+    <br />
+    <img src="./docs/icon.svg">
+    <h3 align="center">🦕 Denly Web Framework 🦕</h3>
+    <p align="center">
+        <a href="https://github.com/mrxiaozhuox/Denly/releases/latest/">
+            <img alt="Release" src="https://img.shields.io/github/v/release/mrxiaozhuox/Denly" />
+        </a>
+    	<a href="https://github.com/mrxiaozhuox/Denly">
+    		<img alt="Denly Stars" src="https://img.shields.io/github/stars/mrxiaozhuox/Denly" />
+    	</a>
+        <a href="https://github.com/mrxiaozhuox/Denly/blob/master/LICENSE">
+        	<img alt="MIT License" src="https://img.shields.io/badge/license-MIT-green" />
+        </a>
+	</p>
+	<p align="center"><a href="https://denly.mrxzx.info">Home</a> | <a href="#">Documentation</a></p>
+</p>
 
-> A study & practice project for Deno...
+
+
 
 ## Functions
 
@@ -105,6 +122,15 @@ app.route.resource("/static", "./public");
 ```
 
 You can bind a static routes by passing the path to the local folder and the public alias to the **resource** function.
+
+### File upload
+
+```typescript
+const file = app.request.file("file");
+Deno.writeFileSync(_tempdir + "/runtime/upload/" + file.name, new Uint8Array(await file.arrayBuffer()));
+```
+
+You can use **Request.file** to upload file.
 
 ## Developer
 
