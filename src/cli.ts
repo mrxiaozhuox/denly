@@ -13,7 +13,7 @@ import {
     rgb8,
 } from "https://deno.land/std@0.97.0/fmt/colors.ts";
 
-import { Memory } from "https://deno.land/x/denly@V0.23/library/memory.ts"
+import { Memory } from "https://deno.land/x/denly@V0.24/library/memory.ts"
 
 const helpMessage: string = `
 🦕 ${rgb8("Denly Cli", 31)} 🦕
@@ -85,9 +85,9 @@ async function lastVersion() {
             }
         }
 
-        return "V0.23";
+        return "V0.24";
     } catch (_) {
-        return "V0.23";
+        return "V0.24";
     }
 }
 
@@ -139,7 +139,7 @@ async function startServer(hotloading = false) {
         "run",
         "-A",
         "--unstable",
-        "https://deno.land/x/denly@V0.23/debug.ts",
+        "https://deno.land/x/denly@V0.24/debug.ts",
         loadConfig("scripts.entry") || "./mod.ts",
     ];
 

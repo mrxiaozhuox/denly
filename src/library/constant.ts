@@ -16,7 +16,7 @@ export const _dirname = (() => {
  * const: _version
  * Get Denly framework version
  */
-export const _version = "V0.23";
+export const _version = "V0.24";
 
 /**
  * @description Get Platform Separator
