@@ -18,6 +18,7 @@ import { EConsole } from "./mod.ts";
 import { fileExist } from "./library/fileSystem.ts";
 
 if (import.meta.main) {
+
     let target = "";
 
     if (Deno.args.length > 0) {
