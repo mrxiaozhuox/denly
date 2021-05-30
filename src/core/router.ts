@@ -45,13 +45,14 @@ class RouteManager {
         controller: Controller,
         options?: ruleOption,
     ): RouteManager {
-        _routers.set(path, controller);
 
         if (options == undefined) {
             options = { method: "ANY" };
         }
 
-        _optinfo.set(path, options);
+        _routers.set(options.method + "@" + path, controller);
+
+        _optinfo.set(options.method + "@" + path, options);
 
         return this;
     }
@@ -162,6 +163,12 @@ export class RouteController {
 
             let flag = false;
 
+            if (key.includes("@")) {
+                const temp = key.split("@");
+                temp.shift();
+                key = temp.join("@");
+            }
+
             const esc: Array<string> = pathParser(key);
 
             if (sections.length < esc.length) {
@@ -196,6 +203,7 @@ export class RouteController {
         });
 
         if (result != "") {
+            result = method + "@" + result;
             return {
                 route: _routers.get(result),
                 other: _optinfo.get(result),

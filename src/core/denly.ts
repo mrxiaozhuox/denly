@@ -307,6 +307,7 @@ export class Denly {
  * parse the url
  */
 export function pathParser(url: string) {
+
     if (url.includes("?")) {
         url = url.split("?")[0];
     }
