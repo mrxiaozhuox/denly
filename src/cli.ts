@@ -73,12 +73,13 @@ async function lastVersion() {
     }
 
     try {
+        console.log(rgb8(`\nGetting the latest framework version!`, 42));
         const response = await fetch("https://api.github.com/repos/mrxiaozhuox/Denly/releases/latest");
         if (response.ok) {
             const data = await response.json();
             if ("name" in data) {
 
-                Memory.set("lastVersion", data["name"]);
+                Memory.set("lastVersion", data["name"], 60 * 60 * 24 * 7);
                 Memory.persistenceAll();
 
                 return data["name"];
@@ -117,7 +118,21 @@ async function startServer(hotloading = false) {
         "debug",
     ];
 
-    const q = Deno.run({ cmd: hotloading ? HotloadingCMD : normalCMD });
+    const cmd = hotloading ? HotloadingCMD : normalCMD;
+
+    /** denon scripts not found */
+    if (!fileExsit("./scripts.json")) {
+        if (hotloading) {
+            cmd[5] = `https://deno.land/x/denly@${await lastVersion()}/debug.ts`;
+            cmd[6] = "./mod.ts";
+            cmd.push("--debug");
+        } else {
+            cmd[5] = "./mod.ts";
+            cmd.pop();
+        }
+    }
+
+    const q = Deno.run({ cmd });
     await q.status();
 }
 
