@@ -29,7 +29,7 @@ OPTIONS:
     -h Prints help information
 
 SUBCOMMAND
-    run             Start the Denly project.
+    start           Start the Denly project.
     debug           Start the project with Hot-loading.
     init            Initialize a new Denly project.
     lint            Check project lint (Deno lint).
@@ -92,35 +92,6 @@ async function lastVersion() {
 }
 
 /**
- * load denly.json
- * @param item
- */
-function loadConfig(item: string) {
-    if (!fileExsit("./denly.json")) return null;
-
-    const rawConfig = Deno.readTextFileSync("./denly.json");
-    let config = [];
-
-    try {
-        config = JSON.parse(rawConfig);
-    } catch (_) {
-        return null;
-    }
-
-    const itemList = item.split(".");
-    let section = config;
-    for (let index = 0; index < itemList.length; index++) {
-        if (itemList[index] in section) {
-            section = section[itemList[index]];
-        } else {
-            section = null;
-        }
-    }
-
-    return section;
-}
-
-/**
  * start the Denly server
  * @param hotloading 
  */
@@ -129,72 +100,65 @@ async function startServer(hotloading = false) {
     let normalCMD = [
         "deno",
         "run",
-        '-A',
-        '--unstable',
-        loadConfig("scripts.entry") || "./mod.ts",
+        "--allow-all",
+        "--quiet",
+        "--unstable",
+        "https://deno.land/x/denon/denon.ts",
+        "start",
     ];
 
     let HotloadingCMD = [
         "deno",
         "run",
-        "-A",
+        "--allow-all",
+        "--quiet",
         "--unstable",
-        "https://deno.land/x/denly@V0.24/debug.ts",
-        loadConfig("scripts.entry") || "./mod.ts",
+        "https://deno.land/x/denon/denon.ts",
+        "debug",
     ];
 
-    if (loadConfig("scripts.entry") || "./mod.ts") {
-
-        const q = Deno.run({ cmd: hotloading ? HotloadingCMD : normalCMD });
-
-        await q.status();
-    } else {
-        console.log(rgb8(`The entry file does not exist: ${rgb8("\"./mod.ts\"", 3)}`, 1));
-    }
+    const q = Deno.run({ cmd: hotloading ? HotloadingCMD : normalCMD });
+    await q.status();
 }
 
 async function initProject() {
-    const name = prompt(`project name (my-project): `) || "my-project";
 
-    const version = prompt(`version (1.0.0): `) || "1.0.0";
+    const name = prompt("project name (my-project):") || "my-project";
 
-    const description = prompt(`description: `) || "Hello Denly!";
+    if (dirExist("./" + name)) {
+        console.log(rgb8(`Directory "./${name}" already exists!`, 1));
+        Deno.exit(0);
+    }
 
-    const author = prompt("author (denly):") || "denly";
+    let clone;
+    try {
+        clone = Deno.run({
+            cmd: [
+                "git",
+                "clone",
+                "https://github.com/DenlyJS/Denly-Template",
+                name
+            ],
+        });
 
-
-    const root = "./" + name + "/";
-
-    if (!dirExist(root)) {
-        try {
-            Deno.mkdirSync(root);
-        } catch (_) {
-            console.log(rgb8("Folder creation failed... ", 1))
+    } catch (error) {
+        if (error.name == "NotFound") {
+            console.log(rgb8(`\nYou need to install the "git" tool to do this!\n`, 3));
+            console.log(rgb8(`Git: https://git-scm.com/ (version control system)\n`, 11));
             Deno.exit(0);
         }
     }
+    if (!clone) return Deno.exit(0);
 
-    try {
-        Deno.writeTextFileSync(root + "denly.json", JSON.stringify({
-            name: name,
-            author: author,
-            version: version,
-            description: description,
-            scripts: {
-                entry: "./mod.ts",
-
-            }
-        }, null, 4));
-
-        Deno.writeTextFileSync(root + "mod.ts", "");
-
-
-        console.log(`${rgb8("\nProject initialized successfully.\n", 2)}`);
-        console.log(rgb8(`   cd ${rgb8("./" + name, 32)}\n`, 34));
-        console.log(rgb8(`   denly hot\n`, 34));
-        console.log(rgb8(`Exec the commands to run the test server!\n`, 42));
-    } catch (error) {
-        console.log(rgb8(`{./${name}} Project init failed... `, 1))
+    const { success } = await clone.status();
+    if (success && fileExsit("./" + name + "/scripts.json")) {
+        console.log(rgb8(`\nProject initialzation successful!\n`, 2));
+        console.log(rgb8(`cd ./${name}`, 11));
+        console.log(rgb8(`denly debug\n`, 11));
+        console.log(rgb8(`Try to exec command to start the server!`, 2))
+        Deno.exit(0);
+    } else {
+        console.log(rgb8(`Project initialization failed!`, 35));
         Deno.exit(0);
     }
 }
@@ -206,16 +170,16 @@ async function main() {
     const args: string[] = Deno.args;
 
     if (args.length == 0) {
-        console.log(helpMessage); return;
+        console.log(helpMessage); Deno.exit(0);
     }
 
     if (args.length == 1 && (args[0] == "-h" || args[0] == "help")) {
         console.log(helpMessage); // help information
-        return;
+        Deno.exit(0);
     }
 
     if (args.length == 1) {
-        if (args[0] == "run") {
+        if (args[0] == "start") {
 
             startServer(); // Normal Start Server
 
@@ -227,10 +191,16 @@ async function main() {
 
             initProject(); // Init New Project
 
+        } else if (args[0] == "lint") {
+
+            await Deno.run({
+                cmd: ["deno", "lint"]
+            }).status();
+            Deno.exit(0);
         }
     }
-
 }
+
 
 if (import.meta.main) {
     main(); // Main Function

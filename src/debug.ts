@@ -23,12 +23,14 @@ if (import.meta.main) {
 
     if (Deno.args.length > 0) {
         target = Deno.args[0];
+    } else {
+        Deno.exit(0);
     }
 
     while (true) {
         if (!fileExist(target)) {
             EConsole.error(`File: '${target}' is not found.`);
-            break;
+            Deno.exit(0);
         }
 
         const p = Deno.run({
