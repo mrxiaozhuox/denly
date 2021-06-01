@@ -4,7 +4,7 @@
  * @link https://denly.mrxzx.info/
  */
 
-import { Denly, Memory, _tempdir } from "./src/mod.ts";
+import { Denly, Memory, _tempdir, Event } from "./src/mod.ts";
 
 
 const app = new Denly({
@@ -23,6 +23,7 @@ app.route.get("/", () => {
 app.route.post("/", () => {
     return "Hello POST";
 });
+
 
 /**
  * Have a good habit.
