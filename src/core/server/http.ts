@@ -198,6 +198,9 @@ export function httpInit(
     reqinfo._args = data.args;
     reqinfo._form = data.form;
     reqinfo._file = data.file;
+
+    // Default Content-Type
+    header.set("Content-Type", "text/html; charset=utf-8");
 }
 
 interface httpResponse {
