@@ -2,12 +2,12 @@ import {
     Cookie as ICookie,
     getCookies,
     setCookie,
-} from "https://deno.land/std@0.92.0/http/cookie.ts";
+} from "https://deno.land/std@0.97.0/http/cookie.ts";
 import {
     Response,
     ServerRequest,
-} from "https://deno.land/std@0.92.0/http/server.ts";
-import { createHash } from "https://deno.land/std@0.92.0/hash/mod.ts";
+} from "https://deno.land/std@0.97.0/http/server.ts";
+import { createHash } from "https://deno.land/std@0.97.0/hash/mod.ts";
 
 import { Memory } from "../library/memory.ts";
 

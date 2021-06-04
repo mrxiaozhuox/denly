@@ -9,7 +9,7 @@
  */
 
 // Deno std library [Server]
-import { ServerRequest } from "https://deno.land/std@0.92.0/http/server.ts";
+import { ServerRequest } from "https://deno.land/std@0.97.0/http/server.ts";
 import { readAll } from "https://deno.land/std@0.97.0/io/util.ts";
 
 // Denly Server Methods

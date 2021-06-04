@@ -1,4 +1,4 @@
-import { serve, Server } from "https://deno.land/std@0.92.0/http/server.ts";
+import { serve, Server } from "https://deno.land/std@0.97.0/http/server.ts";
 // import { Memory } from "../../library/memory.ts";
 import { fileExist } from "../../library/fileSystem.ts";
 
