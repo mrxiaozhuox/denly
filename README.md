@@ -131,6 +131,24 @@ Deno.writeFileSync(
 
 You can use **Request.file** to upload file.
 
+## Template
+
+We provide a template code for large projects!
+
+[Denly-Template](https://github.com/DenlyJS/Denly-Template)
+
+or you can use denly-cli to init it!
+
+```shell
+deno install https://deno.land/x/denly@V0.25/cli.ts -A -n denly
+```
+
+create a new project:
+
+```shell
+denly init
+```
+
 ## Developer
 
 Author: ZhuoEr Liu <mrxzx@qq.com>
