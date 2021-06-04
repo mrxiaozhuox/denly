@@ -17,7 +17,7 @@ Here are some examples.
 #### Simple Server
 
 ```typescript
-import { Denly } from "https://deno.land/x/denly@V0.24/mod.ts";
+import { Denly } from "https://deno.land/x/denly@V0.25/mod.ts";
 
 let app = new Denly({ hostname: "127.0.0.1", port: 808 });
 
@@ -74,7 +74,7 @@ router.post("/info", () => {
 #### Hot-loading
 
 ```shell
-deno run --allow-run https://deno.land/x/denly@V0.24/debug.ts ./mod.ts
+deno run --allow-run https://deno.land/x/denly@V0.25/debug.ts ./mod.ts
 ```
 
 > PS: you need open debug option in the './mod.ts' file.
@@ -82,7 +82,7 @@ deno run --allow-run https://deno.land/x/denly@V0.24/debug.ts ./mod.ts
 #### Memory System
 
 ```typescript
-import { Memory } from "https://deno.land/x/denly@V0.24/mod.ts";
+import { Memory } from "https://deno.land/x/denly@V0.25/mod.ts";
 
 Memory.set("foo", "bar"); // the data will save in the memory.
 

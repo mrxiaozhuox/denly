@@ -4,7 +4,7 @@
  * @abstract Denly project manager
  *
  *
- * Support Version: Denly V0.24
+ * Support Version: Denly V0.25
  * Update Date: 2021/05/27
  *
  */
@@ -13,7 +13,7 @@ import {
     rgb8,
 } from "https://deno.land/std@0.97.0/fmt/colors.ts";
 
-import { Memory } from "https://deno.land/x/denly@V0.24/library/memory.ts"
+import { Memory } from "https://deno.land/x/denly@V0.25/library/memory.ts"
 
 const helpMessage: string = `
 🦕 ${rgb8("Denly Cli", 31)} 🦕
@@ -86,9 +86,9 @@ async function lastVersion() {
             }
         }
 
-        return "V0.24";
+        return "V0.25";
     } catch (_) {
-        return "V0.24";
+        return "V0.25";
     }
 }
 

@@ -16,9 +16,6 @@
 	<p align="center"><a href="https://denly.mrxzx.info">Home</a> | <a href="#">Documentation</a></p>
 </p>
 
-
-
-
 ## Functions
 
 - Router System
@@ -34,7 +31,7 @@
 You just need import the file from github (or gitee)
 
 ```typescript
-import { Denly } from "https://deno.land/x/denly@V0.24/mod.ts";
+import { Denly } from "https://deno.land/x/denly@V0.25/mod.ts";
 
 let app = new Denly({
   hostname: "127.0.0.1",
@@ -54,16 +51,14 @@ app.run();
 It's easy to use, you don't need to download other file, just import the package
 from online.
 
-### Hot-loading [*unstable*]
+### Hot-loading [_unstable_]
 
 if you want the server automatic restart after the file edited, then you can use
 **hot-loading**.
 
 ```shell
-deno run --allow-run https://deno.land/x/denly@V0.24/debug.ts ./mod.ts
+deno run --allow-run https://deno.land/x/denly@V0.25/debug.ts ./mod.ts
 ```
-
-
 
 ### URL parameters
 
@@ -71,18 +66,18 @@ You can define a URL parameter based on a regular expression.
 
 ```typescript
 app.route.regex("letter", /^[a-zA-Z]+$/g);
-app.route.get("/user/:letter",(name: string) => {
-    return `Hello ${name}`;
+app.route.get("/user/:letter", (name: string) => {
+  return `Hello ${name}`;
 });
 ```
 
 The framework is equipped with the following regular expressions by default:
 
-* letter [ a-z A-Z ]
-* number [ 0-9 ]
-* email [ valid email ]
-* phone [ phone number (for Chinese) ]
-* date [ valid date ]
+- letter [ a-z A-Z ]
+- number [ 0-9 ]
+- email [ valid email ]
+- phone [ phone number (for Chinese) ]
+- date [ valid date ]
 
 ### Error fallback
 
@@ -90,15 +85,15 @@ You can send different error status codes and customize how you handle them.
 
 ```typescript
 app.route.fallback(404, () => {
-    return {
-        header: new Headers(), // A headers object
-        body: new TextEncoder().encode("<h1>404 Not Found</h1>"),
-    };
+  return {
+    header: new Headers(), // A headers object
+    body: new TextEncoder().encode("<h1>404 Not Found</h1>"),
+  };
 });
 
 // trigger it
-app.route.get("/error/404",() => {
-    return app.response.abort(404);
+app.route.get("/error/404", () => {
+  return app.response.abort(404);
 });
 ```
 
@@ -107,9 +102,9 @@ app.route.get("/error/404",() => {
 You can simply return a file.
 
 ```typescript
-app.route.get("/image",() => {
-    // Auto-updates headers based on the suffix.
-    return app.response.file("./background.jpg"); 
+app.route.get("/image", () => {
+  // Auto-updates headers based on the suffix.
+  return app.response.file("./background.jpg");
 });
 ```
 
@@ -121,13 +116,17 @@ The file function have second parameter can set **Content-Type**.
 app.route.resource("/static", "./public");
 ```
 
-You can bind a static routes by passing the path to the local folder and the public alias to the **resource** function.
+You can bind a static routes by passing the path to the local folder and the
+public alias to the **resource** function.
 
 ### File upload
 
 ```typescript
 const file = app.request.file("file");
-Deno.writeFileSync(_tempdir + "/runtime/upload/" + file.name, new Uint8Array(await file.arrayBuffer()));
+Deno.writeFileSync(
+  _tempdir + "/runtime/upload/" + file.name,
+  new Uint8Array(await file.arrayBuffer()),
+);
 ```
 
 You can use **Request.file** to upload file.
@@ -137,4 +136,3 @@ You can use **Request.file** to upload file.
 Author: ZhuoEr Liu <mrxzx@qq.com>
 
 I am a back-end engineer and have recently been learning how to use Deno.
-

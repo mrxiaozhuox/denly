@@ -9,7 +9,7 @@
  * Example:
  * deno run --allow-run https://deno.land/x/denly/debug.ts ./mod.ts
  *
- * Support Version: Denly V0.24
+ * Support Version: Denly V0.25
  * Update Date: 2021/05/11
  *
  */
