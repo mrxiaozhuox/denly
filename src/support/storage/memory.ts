@@ -2,18 +2,17 @@
  * support.memory
  * @author mrxiaozhuox <mrxzx@qq.com>
  */
-import { _dirname } from "../mod.ts";
 
 import { createHash } from "https://deno.land/std@0.97.0/hash/mod.ts";
 
-import { DenlyHttp } from "../core/server/http.ts";
-import { dirCheck, fileExist } from "./fileSystem.ts";
+import { DenlyHttp } from "../../core/http.ts";
+import { dirCheck, fileExist } from "../fs/filesystem.ts";
 
-import { EConsole } from "../support/console.ts";
+import { EConsole } from "../console/console.ts";
 
-import { _tempdir } from "./constant.ts";
+import { _tempdir } from "../../core/constant.ts";
 
-import { Event } from "../support/event.ts"
+import { Event } from "../event/event.ts"
 
 interface memoryStruct {
     value: Uint8Array;
@@ -144,9 +143,7 @@ export class EMemory {
             try {
                 Deno.remove(this.memoryPath + filename + ".dat");
                 Deno.remove(this.memoryPath + filename + ".idx");
-            } catch (error) {
-                error;
-            }
+            } catch (_) { }
         }
 
         const memTemp = this.memorys.get(this.thisGroup);
@@ -238,13 +235,9 @@ export class EMemory {
                 try {
                     Deno.removeSync(this.memoryPath + filename + ".dat");
                     Deno.removeSync(this.memoryPath + filename + ".idx");
-                } catch (error) {
-                    error;
-                }
+                } catch (_) { }
 
                 this.delete(info.symbol.split(".")[1]);
-            } else {
-                continue;
             }
         }
 
@@ -280,7 +273,7 @@ export class EMemory {
             const decoder = new TextDecoder();
 
             const data = {
-                dat: new Uint8Array(),
+                dat: new Uint8Array([]),
                 idx: {
                     expire: 0,
                     checker: "",

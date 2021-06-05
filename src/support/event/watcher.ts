@@ -1,4 +1,4 @@
-import { _dirname, Denly, EConsole } from "../mod.ts";
+import { _dirname, Denly, EConsole } from "../../mod.ts";
 
 type callback = (status: string) => any;
 

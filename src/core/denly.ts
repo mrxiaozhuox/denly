@@ -24,20 +24,20 @@ import {
 
     httpInit,
     httpResp,
-} from "./server/http.ts";
-import { getDecoder, postDecoder } from "./server/body.ts";
+} from "./http.ts";
+import { getDecoder, postDecoder } from "./body.ts";
 
 // Denly Storage Manager
-import { bindCookie, loadCookie } from "./storage.ts";
+import { bindCookie, loadCookie } from "../support/storage/session.ts";
 
 // Denly Support
-import { colorTab, EConsole } from "../support/console.ts";
+import { colorTab, EConsole } from "../support/console/console.ts";
 
 // Denly Router
-import { RouteController, Router } from "../core/router.ts";
+import { RouteController, Router } from "../support/router.ts";
 
 // Denly Memory
-import { Memory } from "../library/memory.ts";
+import { Memory } from "../support/storage/memory.ts";
 
 // Denly Others
 import { _dirname, _version, Watcher } from "../mod.ts";
