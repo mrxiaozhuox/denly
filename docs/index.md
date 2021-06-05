@@ -97,6 +97,12 @@ Memory.clean(); // clean all data (include file data)
 Memory.group("Session", false); // change group (second parameter can close file-cahce)
 ```
 
+#### Denly Cli
+
+```shell
+deno install https://deno.land/x/denly@V0.25/cli.ts -A -n denly
+```
+
 ### Maintainers
 
 - Originator: mrxiaozhuox \<mrxzx@qq.com\>
