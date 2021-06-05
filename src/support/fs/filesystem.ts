@@ -4,12 +4,11 @@
  */
 export function dirExist(path: string) {
     try {
-        Deno.readDirSync(path);
+        const stat = Deno.statSync(path);
+        return stat.isDirectory;
     } catch (_) {
         return false;
     }
-
-    return true;
 }
 
 /**
@@ -34,9 +33,9 @@ export function dirCheck(path: string) {
  */
 export function fileExist(path: string) {
     try {
-        Deno.readFileSync(path);
+        const state = Deno.statSync(path);
+        return state.isFile;
     } catch (error) {
         return false;
     }
-    return true;
 }

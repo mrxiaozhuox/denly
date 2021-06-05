@@ -1,6 +1,6 @@
 import { pathParser } from "./denly.ts";
-import { dirExist, fileExist } from "../library/fileSystem.ts";
-import { _separator } from "../library/constant.ts";
+import { dirExist, fileExist } from "../support/filesystem.ts";
+import { _separator } from "./constant.ts";
 import { Response } from "./server/http.ts";
 
 /**

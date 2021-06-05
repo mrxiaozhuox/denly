@@ -9,7 +9,7 @@ import {
 } from "https://deno.land/std@0.97.0/http/server.ts";
 import { createHash } from "https://deno.land/std@0.97.0/hash/mod.ts";
 
-import { Memory } from "../library/memory.ts";
+import { Memory } from "./memory.ts";
 
 /**
  * core.storage

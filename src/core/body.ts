@@ -4,8 +4,8 @@
  */
 
 import { EConsole } from "../../support/console.ts";
-import { Memory } from "../../library/memory.ts";
-import { fileExist } from "../../library/fileSystem.ts";
+import { Memory } from "../../support/storage/memory.ts";
+import { fileExist } from "../../support/filesystem.ts";
 
 export function getDecoder(url: string) {
     const result: { [name: string]: string; } = {};
