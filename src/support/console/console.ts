@@ -10,6 +10,7 @@ export const colorTab = {
 };
 
 export class EConsole {
+
     public static blank(): void {
         console.log("");
     }

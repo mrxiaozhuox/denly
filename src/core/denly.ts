@@ -223,6 +223,8 @@ export class Denly {
         if (resp.error != 200 || status != 200) {
             if (status == 200) status = resp.error;
             result = RouteController.httpError(status);
+        } else if (resp.status != 200) {
+            result.status = resp.status;
         }
 
         // 将框架 Cookie 绑定至程序

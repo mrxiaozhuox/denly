@@ -17,7 +17,7 @@ const app = new Denly({
 
 
 app.route.get("/", () => {
-    return "Hello GET";
+    return "name";
 });
 
 app.route.post("/", () => {
