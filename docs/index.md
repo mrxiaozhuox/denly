@@ -97,6 +97,44 @@ Memory.clean(); // clean all data (include file data)
 Memory.group("Session", false); // change group (second parameter can close file-cahce)
 ```
 
+#### Custom Status
+
+There are two ways to achieve status code customization:
+
+```typescript
+// just change the status code
+router.rule("/", () => {
+    app.response.status = 400;
+    return "400 Error";
+});
+
+// abort will trigger custom fallback
+router.rule("/",() => {
+   return app.response.abort(404); 
+});
+```
+
+#### Error Fallback 
+
+You can send different error status codes and customize how you handle them.
+
+```typescript
+// create 404 fallback
+app.route.fallback(404, () => {
+     return {
+         header: new Headers(), // A headers object
+         body: new TextEncoder().encode("<h1>404 Not Found</h1>"),
+     };
+});
+
+// trigger it
+app.route.get("/error/404", () => {
+    return app.response.abort(404);
+});
+```
+
+
+
 #### Denly Cli
 
 ```shell

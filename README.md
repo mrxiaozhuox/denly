@@ -81,10 +81,11 @@ The framework is equipped with the following regular expressions by default:
 
 ### Custom status code
 
+**response.status** can change status code !
+
 ```typescript
 app.response.status = 500;
 
-// return json code
 return app.response.json({
   "code": 500,
   "data": [],
