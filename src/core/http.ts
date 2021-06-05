@@ -60,7 +60,6 @@ interface ReqInfos {
     _file: { [name: string]: File };
     redirect: string;
     error: number;
-    status: number;
 }
 
 const reqinfo: ReqInfos = {
@@ -69,7 +68,6 @@ const reqinfo: ReqInfos = {
     _file: {},
     redirect: "#", // # 代表不进行重定向（默认）
     error: 200,
-    status: 200,
 };
 
 export class DRequest {
@@ -187,9 +185,7 @@ export class DResponse {
         reqinfo.error = code;
     }
 
-    public code(code: number) {
-        reqinfo.status = code;
-    }
+    public status: number = 200;
 }
 
 export const Response = new DResponse();
@@ -217,16 +213,20 @@ interface httpResponse {
 }
 
 export function httpResp(): httpResponse {
+
     const redirect = reqinfo.redirect;
     const error = reqinfo.error;
+    const status = Response.status;
 
     reqinfo.redirect = "#";
     reqinfo.error = 200;
+
+    Response.status = 200;
 
     return {
         header: header,
         redirect: redirect,
         error: error,
-        status: reqinfo.status,
+        status: status,
     };
 }

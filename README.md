@@ -79,6 +79,19 @@ The framework is equipped with the following regular expressions by default:
 - phone [ phone number (for Chinese) ]
 - date [ valid date ]
 
+### Custom status code
+
+```typescript
+app.response.status = 500;
+
+// return json code
+return app.response.json({
+  "code": 500,
+  "data": [],
+  "message": "Server Error",
+});
+```
+
 ### Error fallback
 
 You can send different error status codes and customize how you handle them.
