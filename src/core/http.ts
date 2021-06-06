@@ -1,6 +1,6 @@
 import { serve, Server } from "https://deno.land/std@0.97.0/http/server.ts";
 // import { Memory } from "../../library/memory.ts";
-import { fileExist } from "../support/fs/filesystem.ts";
+import { fileExist } from "../support/filesystem.ts";
 
 interface StartOption {
     debug?: boolean;

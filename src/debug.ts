@@ -15,7 +15,7 @@
  */
 
 import { EConsole } from "./mod.ts";
-import { fileExist } from "./support/fs/filesystem.ts";
+import { fileExist } from "./support/filesystem.ts";
 
 if (import.meta.main) {
 

@@ -120,7 +120,7 @@ You can send different error status codes and customize how you handle them.
 
 ```typescript
 // create 404 fallback
-app.route.fallback(404, () => {
+app.route.fallback(404, (code: number) => {
      return {
          header: new Headers(), // A headers object
          body: new TextEncoder().encode("<h1>404 Not Found</h1>"),
@@ -132,8 +132,6 @@ app.route.get("/error/404", () => {
     return app.response.abort(404);
 });
 ```
-
-
 
 #### Denly Cli
 

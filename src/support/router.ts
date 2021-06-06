@@ -1,5 +1,5 @@
 import { pathParser } from "../core/denly.ts";
-import { dirExist, fileExist } from "./fs/filesystem.ts";
+import { dirExist, fileExist } from "./filesystem.ts";
 import { _separator } from "../core/constant.ts";
 import { Response } from "../core/http.ts";
 
@@ -13,7 +13,7 @@ interface ruleOption {
 }
 
 type Controller = (...parms: string[]) => any;
-type ErrorContrl = () => { header: Headers; body: string | Uint8Array };
+type ErrorContrl = (status: number) => { header: Headers; body: string | Uint8Array };
 
 // 路由信息
 const _routers: Map<string, Controller> = new Map();
@@ -305,7 +305,7 @@ export class RouteController {
         // 检查 Error 是否存在
         const controller = _errors.get(code);
         if (controller) {
-            const result = controller();
+            const result = controller(code);
             header = result.header;
             const data = result.body;
 
