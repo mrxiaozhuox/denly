@@ -20,7 +20,7 @@ const helpMessage: string = `
 
 Website : https://denly.mrxzx.info/
 Github  : https://github.com/mrxiaozhuox/Denly/
-Author  : https://blog.wwsg18.com/
+Author  : https://mrxzx.info/
 
 USAGE:
     denly [OPTIONS] [SUBCOMMAND]
