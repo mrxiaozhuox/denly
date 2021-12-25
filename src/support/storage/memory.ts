@@ -52,6 +52,8 @@ export class EMemory {
         this.thisGroup = "default";
         this.memoryPath = _tempdir + "/Denly/runtime/memory/";
 
+        // console.log(this.memoryPath);
+
         if (!dirCheck(this.memoryPath)) {
             EConsole.error("Directory init error. [ Memory Temp ]");
             Deno.exit(5);

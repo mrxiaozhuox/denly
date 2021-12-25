@@ -10,6 +10,7 @@ import {
 import { createHash } from "https://deno.land/std@0.97.0/hash/mod.ts";
 
 import { Memory } from "./memory.ts";
+import { randomString } from "../tool.ts";
 
 /**
  * core.storage
@@ -19,6 +20,8 @@ import { Memory } from "./memory.ts";
 
 interface SessionSystem {
     survivalTime: number;
+    sessionId: string;
+    init(sessionId?: string): void;
     set(key: string, value: string | Uint8Array): void;
     get(key: string): string | undefined;
     delete(key: string): boolean;
@@ -27,7 +30,17 @@ interface SessionSystem {
 }
 
 class ESession implements SessionSystem {
+
     public survivalTime = 120 * 60;
+    public sessionId = "";
+
+    public init(sessionId?: string) {
+        if (sessionId == null) {
+            sessionId = randomString(15);
+        }
+        this.sessionId = sessionId;
+        serviceCookie.set("DENLID", sessionId);
+    }
 
     /**
        * 设置 Session 信息
@@ -129,21 +142,22 @@ class ECookie {
     }
 }
 
+const serviceCookie = new ECookie();
+
 /** Session Manager */
 export const Session: SessionSystem = new ESession();
 
 /** Cookie Manager */
-export const Cookie = new ECookie();
+export const Cookie = serviceCookie;
 
 /** bindCokkie to Response */
 export function bindCookie(response: Response) {
     storage.forEach((c) => {
         setCookie(response, c);
     });
-
-    const denlyid = createHash("md5").update(new Date().getTime() + "@DENLYID")
-        .toString();
-    setCookie(response, { name: "DENLYID", value: denlyid });
+    // const denlyid = createHash("md5").update(new Date().getTime() + "@DENLYID")
+    //     .toString();
+    // setCookie(response, { name: "DENLYID", value: denlyid });
 }
 
 /** loadCookie from request */
