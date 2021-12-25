@@ -107,7 +107,7 @@ export class DRequest {
 
 }
 
-export let Request = new DRequest();
+export const Request = new DRequest();
 
 export class DResponse {
 
@@ -185,7 +185,7 @@ export class DResponse {
         reqinfo.error = code;
     }
 
-    public status: number = 200;
+    public status = 200;
 }
 
 export const Response = new DResponse();
